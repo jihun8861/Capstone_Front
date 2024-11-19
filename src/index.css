@@ -1,0 +1,12 @@
+/*default 상태를 삭제 후 변경*/
+
+* { /*margin과 padding을 0으로 설정한 이유는 브라우저마다 기본적으로 적용되는 margin과 padding 값이 다를 수 있기 때문에
+   이를 0으로 초기화하여 모든 요소에서 일관된 스타일링을 적용하기 위해 사용*/
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 100%;
+}
