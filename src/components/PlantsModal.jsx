@@ -21,9 +21,9 @@ const ModalContainer = styled.div`
   background-color: white;
 
   width: 100vw; /* 화면의 100% 크기로 설정 */
-  max-width: 700px; /* 최대 1000px 크기로 설정 */
+  max-width: 470px; /* 최대 1000px 크기로 설정 */
   height: ${({ scrollOffset }) =>
-    `calc(100% - 120px - ${scrollOffset}px)`}; /* 스크롤 위치에 따른 높이 설정 */
+    `calc(100% - 50px - ${scrollOffset}px)`}; /* 스크롤 위치에 따른 높이 설정 */
 
   transform: ${({ isOpen }) =>
     isOpen ? "translateX(0)" : "translateX(100%)"}; /* 우측에서 슬라이드 인 */
@@ -132,7 +132,9 @@ const GridBox1 = styled.div`
   color: gray; /* 폰트 색 설정 */
 `;
 
-const TextBox = styled.h4``;
+const TextBox = styled.h4`
+    padding-bottom: 3px;
+`;
 
 const GridContainer2 = styled.div`
   margin-top: 45px;
@@ -248,7 +250,7 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
                   <GiWateringCan />
                 </IconDiv>
                 <TextBox>{plant?.waterFrequency[0]}</TextBox>
-                <h5>{plant?.waterFrequency[1]}</h5>
+                <h5 style={{paddingBottom:"20px"}}>{plant?.waterFrequency[1]}</h5>
               </DivBox>
               {/*햇빛*/}
               <DivBox>

@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import Main from "../components/Main";
 import InfoBox from "../components/InfoBox";
+import SliderBar from "../components/SliderBar";
 import Modal from "../components/Modal";
-import { MdOutlineKeyboardDoubleArrowRight, MdOutlineKeyboardDoubleArrowLeft } from "react-icons/md"; // 닫기 아이콘 추가
+import {MdOutlineKeyboardDoubleArrowRight,MdOutlineKeyboardDoubleArrowLeft,} from "react-icons/md";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 
 const Container = styled.div`
   width: 100%;
-  height: 980px;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,7 +43,7 @@ const PlantContainer = styled.div`
 `;
 
 const LeftFrame = styled.div`
-  width: 10%;
+  width: 20%;
   height: 100%;
   border: solid 1px;
   display: flex;
@@ -57,7 +58,7 @@ const ArrowIcon = styled.div`
 `;
 
 const MainFrame = styled.div`
-  width: 65%;
+  width: 50%;
   height: 700px;
   border: solid 1px;
   display: flex;
@@ -66,22 +67,71 @@ const MainFrame = styled.div`
 `;
 
 const RightFrame = styled.div`
-  width: 25%;
+  width: 30%;
   height: 100%;
   border: solid 1px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  flex-direction: column;
 `;
 
-// 3D 모델 컴포넌트
+const InfoFrame = styled.div`
+  width: 100%;
+  height: 200px;
+  border: solid 1px;
+`;
+
+const ControlFrame = styled.div`
+  width: 100%;
+  height: 300px;
+  border: solid 1px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding-bottom: 50px;
+`;
+
+const ControlBtn = styled.button`
+  width: 120px;
+  height: 40px;
+  margin: 0 10px; /* 버튼 간격 */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #e2e6ea;
+  }
+
+  &:active {
+    background-color: #d6d8db;
+  }
+`;
+
 const AlokasiaModel = () => {
-  const { scene } = useGLTF("/models/Alokasia/Alokasia8.glb");
-  return <primitive object={scene} scale={10} />;
+  const { scene } = useGLTF("/models/Alokasia/Alokasia6.glb");
+  return (
+    <primitive object={scene} scale={10} position={[0, 0, 0]} /> // 모델 위치 설정
+  );
+};
+
+const SanseveriaModel = () => {
+  const { scene } = useGLTF("/models/Sanseveria/Sanseveria10.glb"); // GLB 파일 경로를 정확히 지정
+  return (
+    <primitive object={scene} scale={10} position={[0, 0, 0]} /> // 모델 위치 설정
+  );
 };
 
 const GrowingContent = () => {
   const [plantName, setPlantName] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showSlider, setShowSlider] = useState(null); // 현재 활성화된 슬라이더 ('temperature', 'humidity', 또는 null)
+  const [temperature, setTemperature] = useState(20);
+  const [humidity, setHumidity] = useState(50);
 
   useEffect(() => {
     const selectedPlant = localStorage.getItem("selectedPlant");
@@ -96,6 +146,10 @@ const GrowingContent = () => {
     setIsModalOpen(false);
   };
 
+  const toggleSlider = (type) => {
+    setShowSlider((prev) => (prev === type ? null : type));
+  };
+
   return (
     <Container>
       <Frame>
@@ -105,27 +159,59 @@ const GrowingContent = () => {
 
         <PlantContainer>
           <LeftFrame>
-            {/* 화살표 아이콘 클릭 시 상태에 따라 변경 */}
             <ArrowIcon onClick={handleArrowClick}>
-              {isModalOpen ? <MdOutlineKeyboardDoubleArrowLeft /> : <MdOutlineKeyboardDoubleArrowRight />}
+              {isModalOpen ? (
+                <MdOutlineKeyboardDoubleArrowLeft />
+              ) : (
+                <MdOutlineKeyboardDoubleArrowRight />
+              )}
             </ArrowIcon>
           </LeftFrame>
 
           <MainFrame>
             <Canvas>
-              <ambientLight intensity={1.0} /> {/* 조명 강도를 증가시켜서 밝게 */}
-              <directionalLight position={[2, 5, 2]} intensity={1.2} /> {/* 방향광 강도 증가 */}
+              <ambientLight intensity={1.0} />
+              <directionalLight position={[2, 5, 2]} intensity={1.2} />
               <OrbitControls
-                enableZoom={false} // 확대 비활성화
-                maxPolarAngle={Math.PI / 2} // 하단 회전 제한
-                rotateSpeed={0.7} // 회전 속도 감소 (기본값: 1)
+                enableZoom={false}
+                maxPolarAngle={Math.PI / 2}
+                rotateSpeed={0.7}
+                target={[0, 0, 0]}
               />
-              <AlokasiaModel />
+              {/* 조건부 렌더링으로 모델 선택 */}
+              {plantName === "알로카시아 프라이덱" && <AlokasiaModel />}
+              {plantName === "산세베리아 슈퍼바" && <SanseveriaModel />}
             </Canvas>
           </MainFrame>
 
           <RightFrame>
-            <InfoBox />
+            <InfoFrame>
+              <InfoBox />
+            </InfoFrame>
+            <ControlFrame>
+              <div>
+                <SliderBar
+                  isVisible={showSlider === "temperature"}
+                  type="temperature"
+                  value={temperature}
+                  onChange={(e) => setTemperature(e.target.value)}
+                />
+                <ControlBtn onClick={() => toggleSlider("temperature")}>
+                  온도조절
+                </ControlBtn>
+              </div>
+              <div>
+                <SliderBar
+                  isVisible={showSlider === "humidity"}
+                  type="humidity"
+                  value={humidity}
+                  onChange={(e) => setHumidity(e.target.value)}
+                />
+                <ControlBtn onClick={() => toggleSlider("humidity")}>
+                  습도조절
+                </ControlBtn>
+              </div>
+            </ControlFrame>
           </RightFrame>
         </PlantContainer>
 
@@ -136,7 +222,7 @@ const GrowingContent = () => {
 };
 
 const Growing = () => {
-  return <Main props={<GrowingContent />} />;
+  return <Main props={<GrowingContent />} footerVisible={false} />;
 };
 
 export default Growing;

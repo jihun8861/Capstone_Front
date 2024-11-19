@@ -16,7 +16,8 @@ const Container = styled.div`
   top: 0;
   background-color: ${(props) =>
     props.atTop ? (props.isHome ? "transparent" : "white") : "white"};
-  border-bottom: ${(props) => (props.isHome ? "none" : "1px solid #e8e8e8")};
+  border-bottom: ${(props) =>
+    props.isHome ? "none" : "1px solid #e8e8e8"};
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
     border-bottom 0.3s ease-in-out;
 `;
@@ -88,6 +89,7 @@ const MenuIcon = styled(RxHamburgerMenu)`
   cursor: pointer;
 `;
 
+
 const LogoutButton = styled.button`
   position: absolute;
   right: 180px;
@@ -133,7 +135,7 @@ const Header = ({ isHome }) => {
               token: token, // 요청 본문에 토큰 전달
             }
           );
-
+          
           // 사용자 정보가 있으면 이름 설정
           if (response.data && response.data.name) {
             setUserName(response.data.name);
@@ -178,6 +180,7 @@ const Header = ({ isHome }) => {
     setUserName(""); // 사용자 이름 초기화
     navigate("/");
   };
+  
 
   return (
     <Container atTop={atTop} isHome={isHome}>
@@ -204,7 +207,7 @@ const Header = ({ isHome }) => {
           {isLoggedIn && (
             <>
               <UserName atTop={atTop} isHome={isHome}>
-                {userName}님
+                {userName}님                
               </UserName>
               <LogoutButton
                 onClick={handleLogoutClick}

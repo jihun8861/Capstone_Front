@@ -5,7 +5,6 @@ import { FaThermometerHalf, FaTint, FaSun } from "react-icons/fa";
 const Container = styled.div`
   width: 100%;
   height: 200px;
-  border: solid 1px;
   display: flex;
   flex-direction: column;
   align-items: center;

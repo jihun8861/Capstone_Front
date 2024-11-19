@@ -64,37 +64,25 @@ const MainTitleText = styled(AnimatedComponent)`
   font-size: 24px;
   font-weight: bold;
   padding-bottom: 20px;
-  animation-delay: 0.4s; // 텍스트가 순차적으로 등장
+  animation-delay: 0.4s;
 `;
 
 const MainText = styled(AnimatedComponent)`
   font-size: 23px;
-  animation-delay: 0.6s; // 순차적으로 등장
+  animation-delay: 0.6s;
 `;
 
 const AnimatedImage = styled.img`
   width: 100%;
   height: 100%;
   opacity: 0;
-  transform: translateY(30px);  // 아래에서 시작
+  transform: translateY(30px); 
   transition: opacity 1.2s ease-out, transform 1.2s ease-out;
   ${({ isVisible }) =>
     isVisible &&
     css`
       animation: ${fadeInSlideUp} 1.2s forwards;
     `}
-`;
-
-const LeafFrame = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-`;
-
-const LeafImage = styled.img`
-  width: 300px;
-  height: 400px;
-  /* 애니메이션 없음 */
 `;
 
 const ItemFrame2 = () => {
@@ -131,7 +119,7 @@ const ItemFrame2 = () => {
     <Container ref={textRef}>
       <Frame>
         <ImageFrame>
-          <AnimatedImage src="/images/2.jpg" isVisible={isVisible} />
+          <AnimatedImage src="/images/plants1.jpg" isVisible={isVisible} />
         </ImageFrame>
         <TextFrame>
           <TitleText isVisible={isVisible}>our vision</TitleText>

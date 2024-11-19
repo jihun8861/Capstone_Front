@@ -42,8 +42,8 @@ const PlantsFrame = styled.div`
 `;
 
 const ImageFrame = styled.div`
-  width: 20%; /* 이미지 프레임 너비 증가 */
-  height: 300px; /* 이미지 높이 증가 */
+  width: 20%;
+  height: 300px;
   border-radius: 15px;
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -52,7 +52,7 @@ const ImageFrame = styled.div`
 `;
 
 const Content = styled.div`
-  width: 74%; /* 컨텐츠 너비 조정 */
+  width: 74%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -113,14 +113,14 @@ const HeaderText = styled.div`
 `;
 
   const SelectContent = () => {
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
     const [selectedPlant, setSelectedPlant] = useState(null);
   
     // Function to handle plant selection
     const handlePlantSelect = (plantName) => {
-      setSelectedPlant(plantName); // Store selected plant
-      localStorage.setItem("selectedPlant", plantName); // Optionally store in localStorage
-      navigate("/growing"); // Navigate to Growing page
+      setSelectedPlant(plantName);
+      localStorage.setItem("selectedPlant", plantName);
+      navigate("/growing");
     };
 
   return (
