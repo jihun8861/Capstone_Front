@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { MdOutlineKeyboardDoubleArrowLeft } from "react-icons/md";
+import { IoClose } from "react-icons/io5";
 import PlantsModal from "./PlantsModal";
 
 const ModalContainer = styled.div`
   position: absolute;
   top: 0;
-  width: 450px;
+  width: 480px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -15,18 +15,17 @@ const ModalContainer = styled.div`
   transition: transform 0.3s ease;
   z-index: 2;
   pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
-  overflow-y: hidden; /* 세로 스크롤 추가 */
-  overflow-x: hidden; /* 세로 스크롤 추가 */
+  overflow-y: hidden;
+  overflow-x: hidden;
 `;
 
-const CloseButton = styled(MdOutlineKeyboardDoubleArrowLeft)`
+const CloseButton = styled(IoClose)`
   position: absolute;
-  top: 50%;
+  top: 14%;
   right: 0;
-  font-size: 42px;
+  font-size: 32px;
   cursor: pointer;
-  transform: translate(-50%, -50%);
-  z-index: 11120;
+  z-index: 1000;
 `;
 
 const Modal = ({ onClose, isOpen }) => {

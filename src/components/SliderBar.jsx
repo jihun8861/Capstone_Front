@@ -34,12 +34,14 @@ const SliderLabel = styled.label`
   font-size: 16px;
   margin-bottom: 10px;
   font-weight: bold;
+  color: ${(props) =>
+    props.type === "temperature" ? "#ff4c4c" : "#4ca1ff"}; /* 온도와 습도에 맞는 색상 */
 `;
 
 const ThermometerSlider = ({ isVisible, type, value, onChange }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <SliderLabel>
+      <SliderLabel type={type}>
         {type === "temperature" ? `온도: ${value}°C` : `습도: ${value}%`}
       </SliderLabel>
       <Container isVisible={isVisible} type={type}>

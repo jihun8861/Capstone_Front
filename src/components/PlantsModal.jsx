@@ -21,7 +21,7 @@ const ModalContainer = styled.div`
   background-color: white;
 
   width: 100vw; /* 화면의 100% 크기로 설정 */
-  max-width: 470px; /* 최대 1000px 크기로 설정 */
+  max-width: 500px; /* 최대 1000px 크기로 설정 */
   height: ${({ scrollOffset }) =>
     `calc(100% - 50px - ${scrollOffset}px)`}; /* 스크롤 위치에 따른 높이 설정 */
 
@@ -215,7 +215,7 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         {/* 모달 내용 클릭 시 닫히지 않도록 설정 */}
         <HeadDivBox>
-          <CloseButton onClick={onClose} />
+          
           <HeadLabel>{plantName}</HeadLabel>
         </HeadDivBox>
 
