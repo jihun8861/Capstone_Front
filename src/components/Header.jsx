@@ -16,8 +16,7 @@ const Container = styled.div`
   top: 0;
   background-color: ${(props) =>
     props.atTop ? (props.isHome ? "transparent" : "white") : "white"};
-  border-bottom: ${(props) =>
-    props.isHome ? "none" : "1px solid #e8e8e8"};
+  border-bottom: ${(props) => (props.isHome ? "none" : "1px solid #e8e8e8")};
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
     border-bottom 0.3s ease-in-out;
 `;
@@ -43,6 +42,7 @@ const Logo = styled.div`
   display: flex;
   align-items: center;
   margin-left: 50px;
+  cursor: pointer;
   img {
     width: 100%;
     height: 80%;
@@ -89,7 +89,6 @@ const MenuIcon = styled(RxHamburgerMenu)`
   cursor: pointer;
 `;
 
-
 const LogoutButton = styled.button`
   position: absolute;
   right: 180px;
@@ -122,7 +121,7 @@ const Header = ({ isHome }) => {
   const navigate = useNavigate();
   const [atTop, setAtTop] = useState(isHome);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -130,15 +129,12 @@ const Header = ({ isHome }) => {
         const token = localStorage.getItem("token");
         if (token) {
           const response = await axios.post(
-            "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser", // API URL
-            {
-              token: token, // 요청 본문에 토큰 전달
-            }
+            "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser",
+            { token }
           );
-          
-          // 사용자 정보가 있으면 이름 설정
-          if (response.data && response.data.name) {
-            setUserName(response.data.name);
+
+          if (response.data && response.data.email) {
+            setUserEmail(response.data.email);
             setIsLoggedIn(true);
           }
         }
@@ -156,40 +152,62 @@ const Header = ({ isHome }) => {
       setAtTop(currentScrollY === 0);
     };
 
-    // 스크롤 이벤트 리스너 추가
     window.addEventListener("scroll", handleScroll);
     return () => {
-      // 컴포넌트 언마운트 시 스크롤 이벤트 리스너 제거
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
-  const handleLoginClick = () => {
-    if (isLoggedIn) {
+  const handleLogoutClick = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    setIsLoggedIn(false);
+    setUserEmail("");
+    navigate("/");
+  };
+
+  // 추가: 토큰 삭제 버튼 핸들러
+  const handleClearTokenClick = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    alert("토큰이 삭제되었습니다.");
+  };
+
+  const handleUserIconClick = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/signin");
+        return;
+      }
+
+      const response = await axios.post(
+        "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
+        { username: userEmail }
+      );
+
+      const plantData = response.data;
+
+      if (plantData && plantData.state === "정상") {
+        navigate("/growing", { state: { plantData } });
+      } else {
+        navigate("/select");
+      }
+    } catch (error) {
       navigate("/select");
-    } else {
-      navigate("/signin"); // 비로그인 상태면 로그인 페이지로 이동
     }
   };
 
-  const handleLogoutClick = () => {
-    // 로그아웃 처리 (토큰 삭제 및 리다이렉트)
-    localStorage.removeItem("token");
-    localStorage.removeItem("access_token"); // access_token도 삭제
-    setIsLoggedIn(false); // 로그인 상태 업데이트
-    setUserName(""); // 사용자 이름 초기화
+  const handleLogoClick = () => {
     navigate("/");
-  };
-  
+  }
 
   return (
     <Container atTop={atTop} isHome={isHome}>
       <Frame>
         <HeaderFrame>
-          <Logo>
-            <a href="/">
+          <Logo onClick={handleLogoClick}>
               <img src="images/logo.png" alt="logo" />
-            </a>
           </Logo>
 
           <NavMenu>
@@ -207,7 +225,7 @@ const Header = ({ isHome }) => {
           {isLoggedIn && (
             <>
               <UserName atTop={atTop} isHome={isHome}>
-                {userName}님                
+                {userEmail}님
               </UserName>
               <LogoutButton
                 onClick={handleLogoutClick}
@@ -219,8 +237,13 @@ const Header = ({ isHome }) => {
             </>
           )}
 
+          {/* 토큰 삭제 버튼 */}
+          <button onClick={handleClearTokenClick} style={{ marginLeft: "10px" }}>
+            토큰 삭제
+          </button>
+
           <UserIcon
-            onClick={handleLoginClick} // 로그인 상태에 따라 mypage 또는 signin으로 이동
+            onClick={handleUserIconClick}
             atTop={atTop}
             isHome={isHome}
           />
@@ -230,5 +253,6 @@ const Header = ({ isHome }) => {
     </Container>
   );
 };
+
 
 export default Header;

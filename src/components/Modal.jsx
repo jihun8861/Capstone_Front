@@ -22,7 +22,7 @@ const ModalContainer = styled.div`
 const CloseButton = styled(IoClose)`
   position: absolute;
   top: 14%;
-  right: 0;
+  right: 5px;
   font-size: 32px;
   cursor: pointer;
   z-index: 1000;

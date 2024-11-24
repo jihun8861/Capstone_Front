@@ -1,6 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import Main from "../components/Main";
+import axios from "axios";
+import { useEffect } from "react";
 import { FaSeedling } from "react-icons/fa"; 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
@@ -112,16 +114,58 @@ const HeaderText = styled.div`
   gap: 10px; /* 아이콘과 텍스트 사이 간격 */
 `;
 
-  const SelectContent = () => {
-    const navigate = useNavigate();
-    const [selectedPlant, setSelectedPlant] = useState(null);
-  
-    // Function to handle plant selection
-    const handlePlantSelect = (plantName) => {
-      setSelectedPlant(plantName);
-      localStorage.setItem("selectedPlant", plantName);
-      navigate("/growing");
+const SelectContent = () => {
+  const navigate = useNavigate();
+  const [selectedPlant, setSelectedPlant] = useState(null);
+  const [email, setEmail] = useState("");
+
+  useEffect(() => {
+    const fetchEmail = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        try {
+          const response = await axios.post(
+            "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser",
+            { token: token }
+          );
+          if (response.data && response.data.email) {
+            setEmail(response.data.email);
+          }
+        } catch (error) {
+          console.error("사용자 이메일을 가져오는 중 오류 발생:", error);
+        }
+      }
     };
+
+    fetchEmail();
+  }, []);
+
+  const handlePlantSelect = async (plantName) => {
+    try {
+      setSelectedPlant(plantName);
+
+      localStorage.setItem("selectedPlant", plantName);
+
+      const response = await axios.post(
+        "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/create",
+        {
+          username: email,
+          plantname: plantName,
+          createtime: new Date().toISOString(),
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("식물 정보가 성공적으로 저장되었습니다.");
+        navigate("/growing");
+      } else {
+        console.error("식물 저장 중 문제가 발생했습니다:", response.data);
+      }
+    } catch (error) {
+      console.error("식물 선택 중 오류 발생:", error);
+      alert("식물 선택에 실패했습니다. 다시 시도해주세요.");
+    }
+  };
 
   return (
     <Container>
@@ -132,7 +176,7 @@ const HeaderText = styled.div`
             나만의 가상 정원
           </HeaderText>
         </HeaderBar>
-        
+
         <PlantsFrame onClick={() => handlePlantSelect("알로카시아 프라이덱")}>
           <ImageFrame image="/images/image1.png" />
           <Content>
@@ -162,7 +206,9 @@ const HeaderText = styled.div`
           <ImageFrame image="/images/image2.png" />
           <Content>
             <PlantTitle>산세베리아 슈퍼바</PlantTitle>
-            <PlantScientificName>Sansevieria Trifasciata ‘Futura Superba’</PlantScientificName>
+            <PlantScientificName>
+              Sansevieria Trifasciata ‘Futura Superba’
+            </PlantScientificName>
             <TagContainer>
               <Tag>공기 정화</Tag>
               <Tag>관리 쉬움</Tag>
