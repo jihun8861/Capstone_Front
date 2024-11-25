@@ -5,7 +5,6 @@ import { FaThermometerHalf, FaTint, FaSun } from "react-icons/fa";
 const Container = styled.div`
   width: 100%;
   height: 200px;
-  border: solid 1px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -72,10 +71,10 @@ const Value = styled.div`
   font-weight: bold;
 `;
 
-const InfoBox = () => {
-  const temperature = 23.6;
-  const humidity = 65.7;
-  const light = 1489;
+const InfoBox = ({ temperature, humidity, light }) => {
+  const sunlightLevels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
+
+  const lightLevel = sunlightLevels[light - 1] || "정보 없음";
 
   return (
     <Container>
@@ -91,6 +90,7 @@ const InfoBox = () => {
           <Label>온도</Label>
           <Value>{temperature} ℃</Value>
         </MainBox>
+        
         <MainBox>
           <IconFrame color="#4fc3f7">
             <FaTint />
@@ -101,15 +101,16 @@ const InfoBox = () => {
           <Label>습도</Label>
           <Value>{humidity} %</Value>
         </MainBox>
+        
         <MainBox>
           <IconFrame color="#ffd54f">
             <FaSun />
           </IconFrame>
-          <Gauge color="#ffd54f" percentage={(light / 2000) * 100}>
-            {light} lux
+          <Gauge color="#ffd54f" percentage={(light / 5) * 100}>
+            {lightLevel}
           </Gauge>
           <Label>조도</Label>
-          <Value>{light} lux</Value>
+          <Value>{lightLevel}</Value>
         </MainBox>
       </MainFrame>
     </Container>

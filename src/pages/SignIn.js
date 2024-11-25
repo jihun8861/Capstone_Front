@@ -80,16 +80,13 @@ const ButtonWithImageAndText = ({
   );
 };
 
-// 수정된 SignInContent 컴포넌트
+
 const SignInContent = () => {
   const [email, setEmail] = useState("");
   const [pw, setPw] = useState("");
 
-  const [emailError, setEmailError] = useState("");
-  const [emailEntered, setEmailEntered] = useState(false);
-
+  const [emailValid, setEmailValid] = useState(false); // 이메일 유효성 상태
   const [pwValid, setPwValid] = useState(false);
-
   const [pwType, setPwType] = useState("password");
   const [showPassword, setShowPassword] = useState(false);
 
@@ -119,20 +116,16 @@ const SignInContent = () => {
     window.location.href = KAKAO_AUTH_URL;
   };
 
-  const handleEmail = (e) => {
-    const newEmail = e.target.value;
-    setEmail(newEmail);
-    setEmailEntered(newEmail.length > 0);
-    updateButtonState(newEmail, pw);
-
-    if (!validateEmail(newEmail)) {
-      setEmailError("이메일 형식이 올바르지 않습니다.");
-    } else setEmailError("");
-  };
-
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
+  };
+
+  const handleEmail = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    setEmailValid(validateEmail(newEmail));
+    updateButtonState(newEmail, pw);
   };
 
   const handlePw = (e) => {
@@ -143,9 +136,7 @@ const SignInContent = () => {
   };
 
   const updateButtonState = (newEmail, newPw) => {
-    setNotAllow(
-      !(newEmail.length > 0 && newPw.length >= 4 && validateEmail(newEmail))
-    );
+    setNotAllow(!(validateEmail(newEmail) && newPw.length >= 4));
   };
 
   const handleKeyDown = (e) => {
@@ -155,14 +146,13 @@ const SignInContent = () => {
   };
 
   const onClickSignInBtn = async () => {
-    if (notAllow) {
-      if (email.length === 0 && pw.length === 0) {
-        alert("값을 입력해주세요.");
-      } else if (!validateEmail(email)) {
-        alert(emailError);
-      } else {
-        alert("비밀번호를 올바르게 입력해주세요.");
-      }
+    if (!emailValid) {
+      alert("유효한 이메일을 입력해주세요.");
+      return;
+    }
+
+    if (!pwValid) {
+      alert("비밀번호는 4자 이상이어야 합니다.");
       return;
     }
 
@@ -224,7 +214,9 @@ const SignInContent = () => {
                 onChange={handleEmail}
                 onKeyDown={handleKeyDown}
               />
-              {emailError && <P3Text3>{emailError}</P3Text3>}
+              {!emailValid && email.length > 0 && (
+                <P3Text3>유효한 이메일 주소를 입력해주세요.</P3Text3>
+              )}
               <InputWrapper>
                 <Input
                   type={showPassword ? "text" : "password"}
@@ -238,7 +230,7 @@ const SignInContent = () => {
                 </P3Text4>
               </InputWrapper>
               {!pwValid && pw.length > 0 && (
-                <P3Text3>비밀번호는 4자 이상이여야 합니다.</P3Text3>
+                <P3Text3>비밀번호는 4자 이상이어야 합니다.</P3Text3>
               )}
               <Button onClick={onClickSignInBtn} disabled={notAllow}>
                 로그인
@@ -256,7 +248,7 @@ const SignInContent = () => {
               bgcolor="#fee500"
               Text="카카오로 계속하기"
               textcolor="rgb(0 0 0)"
-              onClick={loginHandler} // 카카오 로그인 버튼에 onClick 추가
+              onClick={loginHandler}
             />
             <ButtonWithImageAndText
               imageSrc="/images/social_google_icon.svg"
@@ -264,14 +256,14 @@ const SignInContent = () => {
               border="1px solid gray"
               Text="구글로 계속하기"
               textcolor="rgb(0 0 0)"
-              onClick={googleLoginHandler} // 구글 로그인 버튼에 onClick 추가
+              onClick={googleLoginHandler}
             />
             <ButtonWithImageAndText
               imageSrc="/images/social_naver_icon.svg"
               bgcolor="#03CF5D"
               Text="네이버로 계속하기"
               textcolor="rgb(255 255 255)"
-              onClick={naverLoginHandler} // 네이버 로그인 버튼에 onClick 추가
+              onClick={naverLoginHandler}
             />
           </Frame3Bottom>
           <P3Text2 onClick={handleSignUpClick}>회원가입</P3Text2>
@@ -280,6 +272,7 @@ const SignInContent = () => {
     </Container>
   );
 };
+
 
 const SignIn = () => {
   return <SignInContent />;

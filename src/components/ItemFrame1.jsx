@@ -1,5 +1,7 @@
 import React from "react";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 const Container = styled.div`
   width: 100%;
@@ -86,7 +88,7 @@ const ImageFrame = styled.div`
 const Image = styled.img`
   width: 100%;
   height: 100%;
-  background-image: url("/images/5.png");
+  background-image: url("/images/mainimage.png");
   background-size: 100% 100%;
 `;
 
@@ -120,6 +122,17 @@ const TotalPages = styled.span`
 `;
 
 const ItemFrame1 = () => {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  const handleStartClick = () => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      navigate("/select");
+    } else {
+      navigate("/signin"); // 비로그인 상태면 로그인 페이지로 이동
+    }
+  }
   return (
     <Container>
       <LeftFrame>
@@ -139,7 +152,7 @@ const ItemFrame1 = () => {
           </BottomText>
         </TextFrame>
 
-        <Btn>START NOW</Btn>
+        <Btn onClick={handleStartClick}>START NOW</Btn>
 
         <PageIndicator>
           <Divider />

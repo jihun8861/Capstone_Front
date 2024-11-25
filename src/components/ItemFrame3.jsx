@@ -140,8 +140,8 @@ const ItemFrame3 = () => {
         <TitleFrame isVisible={isVisible}>
           <TitleText isVisible={isVisible}>what we doing</TitleText>
           <MainImageFrame isVisible={isVisible}>
-            <SecondImage src="/images/sd.jpg" isVisible={isVisible} />
-            <SecondImage src="/images/ee.png" isVisible={isVisible} />
+            <SecondImage src="/images/study2.jpg" isVisible={isVisible} />
+            <SecondImage src="/images/study1.png" isVisible={isVisible} />
           </MainImageFrame>
         </TitleFrame>
         <MainText isVisible={isVisible}>
@@ -151,7 +151,7 @@ const ItemFrame3 = () => {
           </p>
         </MainText>
         <ImageFrame isVisible={isVisible}>
-          <Image src="/images/qq.png" isVisible={isVisible} />
+          <Image src="/images/plants2.png" isVisible={isVisible} />
         </ImageFrame>
       </Frame>
     </Container>

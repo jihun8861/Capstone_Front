@@ -1,53 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { MdOutlineKeyboardDoubleArrowLeft } from "react-icons/md"; // 닫기 아이콘 추가
+import { IoClose } from "react-icons/io5";
+import PlantsModal from "./PlantsModal";
 
 const ModalContainer = styled.div`
   position: absolute;
-  top: 120px;
-  left: 0;
-  width: 300px;
-  height: 90%;
-  background-color: lightblue;
+  top: 0;
+  width: 480px;
+  height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  transform: ${({ isOpen }) => (isOpen ? "translateX(0)" : "translateX(-100%)")};
+  flex-direction: column;
+  transform: ${({ isOpen }) =>
+    isOpen ? "translateX(0)" : "translateX(-100%)"};
   transition: transform 0.3s ease;
-  z-index: 1000;
-  pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")}; /* 모달이 열릴 때만 클릭 가능하게 설정 */
+  z-index: 2;
+  pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
+  overflow-y: hidden;
+  overflow-x: hidden;
 `;
 
-const ModalContent = styled.div`
-  width: 100%;
-  height: 200px;
-  border: solid 1px;
-`;
-
-const CloseButton = styled(MdOutlineKeyboardDoubleArrowLeft)`
+const CloseButton = styled(IoClose)`
   position: absolute;
-  top: 50%;
-  right: 0;
-  font-size: 42px;
+  top: 14%;
+  right: 5px;
+  font-size: 32px;
   cursor: pointer;
-  transform: translate(-50%, -50%); /* 중앙 정렬을 위해 이동 */
+  z-index: 1000;
 `;
-
 
 const Modal = ({ onClose, isOpen }) => {
-  // 모달 외부를 클릭했을 때 모달을 닫는 함수
-  const handleModalContainerClick = (e) => {
-    e.stopPropagation(); // 모달 콘텐츠 클릭 시 이벤트 버블링을 막음
-    onClose(); // 모달 닫기
-  };
+  const [plantName, setPlantName] = useState("");
+  const [isPlantsModalOpen, setIsPlantsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const selectedPlant = localStorage.getItem("selectedPlant");
+    setPlantName(selectedPlant || "");
+  }, []);
+
+  const openPlantsModal = () => setIsPlantsModalOpen(true);
+  const closePlantsModal = () => setIsPlantsModalOpen(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      openPlantsModal(); // 모달이 열릴 때 식물 정보 모달 자동 열림
+      document.body.style.overflow = "hidden"; // 스크롤 잠금
+    } else {
+      document.body.style.overflow = "auto"; // 스크롤 복구
+    }
+
+    // 컴포넌트가 언마운트될 때 초기화
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isOpen]);
 
   return (
-    <ModalContainer isOpen={isOpen} onClick={handleModalContainerClick}>
-      <ModalContent onClick={(e) => e.stopPropagation()}> {/* 모달 내용 클릭 시 닫히지 않도록 설정 */}
-        <CloseButton onClick={onClose} />
-        <h2>모달 창</h2>
-        <p>여기에 내용을 추가하세요.</p>
-      </ModalContent>
+    <ModalContainer isOpen={isOpen}>
+      
+        {isPlantsModalOpen && (
+          <PlantsModal
+            isOpen={isPlantsModalOpen}
+            onClose={closePlantsModal}
+            plantName={plantName}
+          />
+        )}
+      <CloseButton onClick={onClose} />
     </ModalContainer>
   );
 };

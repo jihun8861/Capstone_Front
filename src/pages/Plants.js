@@ -93,8 +93,6 @@ const PlantTitle = styled.h3`
 
 `;
  
-
-
 const PlantsContent = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);    
     const [plantName, setPlantName] = useState("");

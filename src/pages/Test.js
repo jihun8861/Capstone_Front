@@ -1,39 +1,42 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, useGLTF } from "@react-three/drei";
 
-const Wrapper = styled.div`
+const Container = styled.div`
     width: 100%;
-    height: 100vh;
-    position: relative;
-`;
+    height: 1000px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
 
-const IntroVideo = styled.div`
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-`;
+const AlokasiaModel = () => {
+  const { scene } = useGLTF("/models/Alokasia/Alokasia10.glb");
+  return <primitive object={scene} scale={5} position={[0, 0, 0]} />;
+};
 
-const Video = styled.video`
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-`;
+const SimpleModelViewer = () => {
+  return (
+    <Container>
+    <Canvas
+      camera={{
+        position: [0, 5, 10],
+        fov: 40,
+      }}
+    >
+      <ambientLight intensity={1.0} />
+      <directionalLight position={[2, 5, 2]} intensity={1.2} />
+      
+      <OrbitControls
+        enableZoom={true}
+        maxPolarAngle={Math.PI / 2}
+        rotateSpeed={0.7}
+      />
+      <AlokasiaModel />
+    </Canvas>
+    </Container>
+  );
+};
 
-const Test = () => {
-
-    return (
-        <Wrapper>
-            테스트
-            <IntroVideo>
-                <Video muted autoPlay loop>
-                    <source src="/assets/play.mp4" type="video/mp4" />
-                </Video>
-            </IntroVideo>
-        </Wrapper>
-    )
-}
-
-export default Test;
+export default SimpleModelViewer;
