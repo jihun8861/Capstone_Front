@@ -257,8 +257,8 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
                 <IconDiv>
                   <LuSun />
                 </IconDiv>
-                <TextBox>{plant?.sunlight[0]}</TextBox>
-                <h5>{plant?.sunlight[1]}</h5>
+                <TextBox>{plant?.light[0]}</TextBox>
+                <h5>{plant?.light[1]}</h5>
               </DivBox>
               {/*습도*/}
               <DivBox>

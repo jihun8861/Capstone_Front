@@ -19,6 +19,10 @@ const ModalContainer = styled.div`
   overflow-x: hidden;
 `;
 
+const ModalFrame = styled.div`
+  position: relative;
+`
+
 const CloseButton = styled(IoClose)`
   position: absolute;
   top: 14%;
@@ -56,7 +60,6 @@ const Modal = ({ onClose, isOpen }) => {
 
   return (
     <ModalContainer isOpen={isOpen}>
-      
         {isPlantsModalOpen && (
           <PlantsModal
             isOpen={isPlantsModalOpen}

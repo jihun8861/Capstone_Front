@@ -73,8 +73,13 @@ const Value = styled.div`
 
 const InfoBox = ({ temperature, humidity, light }) => {
   const sunlightLevels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
-
-  const lightLevel = sunlightLevels[light - 1] || "정보 없음";
+  
+  // light 값을 숫자로 변환
+  const lightIndex = typeof light === 'string' 
+    ? sunlightLevels.indexOf(light) + 1 
+    : light;
+  
+  const lightLevel = sunlightLevels[lightIndex - 1] || "정보 없음";
 
   return (
     <Container>
@@ -85,28 +90,31 @@ const InfoBox = ({ temperature, humidity, light }) => {
             <FaThermometerHalf />
           </IconFrame>
           <Gauge color="#e57373" percentage={(temperature / 50) * 100}>
-            {temperature}℃
+            {temperature ?? "N/A"}℃
           </Gauge>
           <Label>온도</Label>
-          <Value>{temperature} ℃</Value>
+          <Value>{temperature ?? "N/A"} ℃</Value>
         </MainBox>
-        
+
         <MainBox>
           <IconFrame color="#4fc3f7">
             <FaTint />
           </IconFrame>
-          <Gauge color="#4fc3f7" percentage={humidity}>
-            {humidity}%
+          <Gauge color="#4fc3f7" percentage={humidity || 0}>
+            {humidity ?? "N/A"}%
           </Gauge>
           <Label>습도</Label>
-          <Value>{humidity} %</Value>
+          <Value>{humidity ?? "N/A"} %</Value>
         </MainBox>
-        
+
         <MainBox>
           <IconFrame color="#ffd54f">
             <FaSun />
           </IconFrame>
-          <Gauge color="#ffd54f" percentage={(light / 5) * 100}>
+          <Gauge 
+            color="#ffd54f" 
+            percentage={((lightIndex || 1) / 5) * 100}
+          >
             {lightLevel}
           </Gauge>
           <Label>조도</Label>

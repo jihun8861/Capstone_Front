@@ -6,6 +6,7 @@ import { useEffect } from "react";
 import { FaSeedling } from "react-icons/fa"; 
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 
 const Container = styled.div`
   width: 100%;
@@ -111,13 +112,19 @@ const HeaderBar = styled.div`
 const HeaderText = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px; /* 아이콘과 텍스트 사이 간격 */
+  gap: 10px;
 `;
 
 const SelectContent = () => {
   const navigate = useNavigate();
   const [selectedPlant, setSelectedPlant] = useState(null);
   const [email, setEmail] = useState("");
+  const location = useLocation();
+  const plantData = location.state?.plantData || {};
+
+  useEffect(() => {
+    console.log("전달된 식물 데이터:", plantData);
+  }, [plantData]);
 
   useEffect(() => {
     const fetchEmail = async () => {
@@ -126,7 +133,9 @@ const SelectContent = () => {
         try {
           const response = await axios.post(
             "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser",
-            { token: token }
+            { 
+              token: token 
+            }
           );
           if (response.data && response.data.email) {
             setEmail(response.data.email);
@@ -143,29 +152,42 @@ const SelectContent = () => {
   const handlePlantSelect = async (plantName) => {
     try {
       setSelectedPlant(plantName);
-
       localStorage.setItem("selectedPlant", plantName);
-
+  
+      const createTime = new Date().toISOString();
+  
+      // 서버에 저장
       const response = await axios.post(
         "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/create",
-        {
-          username: email,
-          plantname: plantName,
-          createtime: new Date().toISOString(),
-        }
+        { 
+          username: email, 
+          plantname: plantName, 
+          createtime: createTime }
       );
-
+  
       if (response.status === 200) {
-        console.log("식물 정보가 성공적으로 저장되었습니다.");
-        navigate("/growing");
-      } else {
-        console.error("식물 저장 중 문제가 발생했습니다:", response.data);
+        console.log("식물 정보 저장 성공");
+  
+        const dataForGrowingPage = {
+          temperature: plantData?.temperature || 20,
+          humidity: plantData?.humidity || 50,
+          light: plantData?.light || "보통",
+          plantName: plantName,
+        };
+  
+        // Growing 페이지로 이동 (한 번의 navigate로 상태 전달)
+        navigate("/growing", {
+          state: {
+            plantData: dataForGrowingPage,
+          },
+        });
       }
     } catch (error) {
-      console.error("식물 선택 중 오류 발생:", error);
-      alert("식물 선택에 실패했습니다. 다시 시도해주세요.");
+      console.error("식물 선택 중 오류:", error);
     }
   };
+  
+  
 
   return (
     <Container>

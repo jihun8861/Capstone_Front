@@ -130,21 +130,40 @@ const Header = ({ isHome }) => {
         if (token) {
           const response = await axios.post(
             "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser",
-            { token }
+            { 
+              token: token
+            }
           );
-
+  
           if (response.data && response.data.email) {
-            setUserEmail(response.data.email);
+            const email = response.data.email;
+            setUserEmail(email);
             setIsLoggedIn(true);
+  
+            // 백엔드에서 selectedPlant 불러오기
+            const plantResponse = await axios.post(
+              "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
+              { 
+                username: email 
+              }
+            );
+  
+            if (plantResponse.data && plantResponse.data.plantname) {
+              const plantName = plantResponse.data.plantname;
+              localStorage.setItem("selectedPlant", plantName); // 로컬스토리지에 저장
+              console.log(`사용자의 선택된 식물: ${plantName}`);
+            }
           }
         }
       } catch (error) {
         console.error("사용자 정보를 가져오는 중 오류 발생:", error);
       }
     };
-
+  
     fetchUserInfo();
   }, []);
+  
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -159,13 +178,16 @@ const Header = ({ isHome }) => {
   }, []);
 
   const handleLogoutClick = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("access_token");
+    // 사용자 관련 데이터 초기화
+    localStorage.removeItem("token");         // 토큰 삭제
+    localStorage.removeItem("access_token"); // accessToken 삭제
+    localStorage.removeItem("selectedPlant"); // 선택된 식물 삭제
+    
     setIsLoggedIn(false);
     setUserEmail("");
     navigate("/");
   };
-
+  
   // 추가: 토큰 삭제 버튼 핸들러
   const handleClearTokenClick = () => {
     localStorage.removeItem("token");
@@ -180,24 +202,27 @@ const Header = ({ isHome }) => {
         navigate("/signin");
         return;
       }
-
+  
       const response = await axios.post(
         "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
-        { username: userEmail }
+        {
+          username: userEmail,
+        }
       );
-
+  
       const plantData = response.data;
-
+  
       if (plantData && plantData.state === "정상") {
         navigate("/growing", { state: { plantData } });
       } else {
-        navigate("/select");
+        navigate("/select", { state: { plantData } });
       }
     } catch (error) {
-      navigate("/select");
+      console.error("사용자 정보를 가져오는 중 오류 발생:", error);
+      navigate("/select", { state: { plantData: null } });
     }
   };
-
+  
   const handleLogoClick = () => {
     navigate("/");
   }
@@ -253,6 +278,5 @@ const Header = ({ isHome }) => {
     </Container>
   );
 };
-
 
 export default Header;
