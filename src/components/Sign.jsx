@@ -9,8 +9,9 @@ export const Container = styled.div`
 `;
 
 export const Frame1 = styled.div`
+  margin-top: 15vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex: 1 1 0%;
 `;
 
@@ -20,11 +21,11 @@ export const Frame2 = styled.div`
 `;
 
 export const Frame3Top = styled.div`
-  width: 350px;
+  width: 400px;
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 1rem; /* flex 항목 간의 간격 */
+  gap: 1.4rem; /* flex 항목 간의 간격 */
 `;
 
 export const InputBox = styled.div`
@@ -36,44 +37,47 @@ export const InputBox = styled.div`
 export const InputWrapper = styled.div`
   position: relative; /* 상대 위치 */
   width: 100%;
-`;
+  `;
 
 export const Input = styled.input`
-  margin-top:5px;
-  margin-bottom: 5px;
+  margin-top: 0.7rem;
+  margin-bottom: 0.5rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   display: inline-block;
   position: relative;
   border-radius: 12px;
-  font-size: 1rem; /* 텍스트 크기 */
+  font-size: 1.2rem; /* 텍스트 크기 */
+  font-weight: 550; /* 텍스트 굵기 증가 */
   border: 2px solid gray;
   width: 100%;
   padding: 10px;
 `;
 
 export const Button = styled.button`
-  margin-top:5px;
-  margin-bottom: 5px;
+  margin-top: 1rem;
+  margin-top: 1rem;
   position: relative;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding-top: 0.8rem;
+  padding-bottom:  0.8rem;
   background-color: #63b26d;
   color: white;
   border-radius: 12px;
   border: none;
-  font-size: 1.1rem; /* 텍스트 크기 */
+  font-size: 1.5rem; /* 텍스트 크기 */
   font-weight: bold; /* 텍스트 굵기 증가 */
   cursor: pointer; /* 커서를 손가락 모양으로 변경 */
 `;
 export const H2Sign = styled.h2`
-  font-size: 3rem;
+  font-size: 3.3rem;
   font-weight: 4000;
   text-align: center;
   color: rgba(61, 81, 92, var(--tw-text-opacity));
 `;
 
 export const P3Text = styled.p`
+  font-size: 1.1rem;
   text-align: center;
-  font-weight: 4000;
   word-break: keep-all;
   color: gray;
 `;
@@ -101,22 +105,15 @@ export const P3Text4 = styled.p`
 
 export const HomePageDiv = styled.div`
   display: flex;
-  justify-content: left; /* 가로 중앙 정렬 */
+  justify-content: center; /* 가로 중앙 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
   img {
-    width: 20vw; /* 화면 너비의 20%로 설정 */
+    width: 50vw; /* 화면 너비의 20%로 설정 */
     height: auto; /* 비율을 유지하면서 높이를 자동으로 설정 */
-    max-width: 200px; /* 최대 너비 200px */
+    max-width: 250px; /* 최대 너비 200px */
   }
   width: 100%;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-  padding-top: 0.7rem;
-  padding-bottom: 1rem;
-  padding-left: 0.7rem;
-  padding-right: 5rem;
-  gap: 0.5rem;
-  border-radius: 12px;
+  margin-bottom: 2.5rem;
   background-color: ${(props) => props.bgcolor || "#63b26d"};
   border: ${(props) => (props.border ? props.border : "none")};
   cursor: pointer; /* 커서를 손가락 모양으로 변경 */

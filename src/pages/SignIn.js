@@ -31,6 +31,7 @@ const DivideLineBox = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
+  margin: 1rem 0rem 1rem 0rem; /* 위, 오른쪽, 아래, 왼쪽 여백 */
 `;
 
 const DivideLine = styled.div`
@@ -41,7 +42,7 @@ const DivideLine = styled.div`
 
 const OrText = styled.div`
   margin: 0 10px; /* 텍스트 좌우 여백 */
-  font-size: 0.75rem;
+  font-size: 1rem;
 `;
 
 // 이미지+텍스트 버튼
@@ -51,6 +52,7 @@ const ImageDiv = styled.div`
   padding-left: 4rem;
   padding-right: 5rem;
   border-radius: 12px;
+  height: 4rem;
   display: flex;
   background-color: ${(props) => props.bgcolor || "#63b26d"};
   border: ${(props) => (props.border ? props.border : "none")};
@@ -58,6 +60,7 @@ const ImageDiv = styled.div`
 `;
 
 const ButtonText = styled.p`
+  font-size: 1.4rem; /* 텍스트 크기 */
   display: flex; /* 상하조절? */
   align-items: center; /* 수직 중앙 정렬 */
   color: ${(props) => props.textcolor || "rgb(255 255 255)"}; /* 텍스트 색상 */
@@ -199,13 +202,12 @@ const SignInContent = () => {
 
   return (
     <Container>
-      <HomePageButton />
-
-      <Frame1>
+      <Frame1>      
         <Frame2>
+        <HomePageButton />
           <Frame3Top>
             <H2Sign>로그인</H2Sign>
-            <P3Text>가상식물키우기 VirtuaLeaf에 오신것을 환영합니다.</P3Text>
+            <P3Text>가상식물키우기 VirtuaLeaf에 오신 것을 환영합니다.</P3Text>
             <InputBox>
               <Input
                 type="email"

@@ -21,6 +21,21 @@ import {
   HomePageDiv,
 } from "../components/Sign";
 
+// ______or______ << 처럼 생긴 컴포넌트를 감싸는 박스
+const DivideLineBox = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0rem 1rem 0rem; /* 위, 오른쪽, 아래, 왼쪽 여백 */
+`;
+
+const DivideLine = styled.div`
+  height: 1px;
+  flex: 1;
+  background-color: #000000;
+`;
+
+
 const SignUpContent = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -164,9 +179,10 @@ const SignUpContent = () => {
 
   return (
     <Container>
-      <HomePageButton navigate={navigate} />
+     
       <Frame1>
-        <Frame2>
+        <Frame2> 
+          <HomePageButton navigate={navigate} />
           <Frame3Top>
             <H2Sign>회원가입</H2Sign>
             <P3Text>VirtuaLeaf의 회원이 되어보세요!</P3Text>
@@ -190,6 +206,7 @@ const SignUpContent = () => {
                 onChange={handleName}
                 onKeyDown={handleKeyDown}
               />
+ 
               <InputWrapper>
                 <Input
                   type={showPassword ? "text" : "password"}
