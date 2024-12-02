@@ -190,7 +190,7 @@ const SignUpContent = () => {
               <InputWrapper>
                 <Input
                   type="email"
-                  placeholder="이메일을 입력해주세요"
+                  placeholder="✉이메일을 입력해주세요"
                   value={email}
                   onChange={handleEmail}
                   onKeyDown={handleKeyDown}
@@ -201,7 +201,7 @@ const SignUpContent = () => {
               {emailSuccess && <P3Text3>{emailSuccess}</P3Text3>}
               <Input
                 type="text"
-                placeholder="이름을 입력해 주세요"
+                placeholder="🌱이름을 입력해 주세요"
                 value={name}
                 onChange={handleName}
                 onKeyDown={handleKeyDown}
@@ -210,7 +210,7 @@ const SignUpContent = () => {
               <InputWrapper>
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="비밀번호를 입력해주세요"
+                  placeholder="🔐비밀번호를 입력해주세요"
                   value={pw}
                   onChange={handlePw}
                   onKeyDown={handleKeyDown}
@@ -219,7 +219,7 @@ const SignUpContent = () => {
               </InputWrapper>
               <Input
                 type={showPassword ? "text" : "password"}
-                placeholder="한번 더 입력해주세요"
+                placeholder="✅한번 더 입력해주세요"
                 value={confirmPw}
                 onChange={handleConfirmPw}
                 onKeyDown={handleKeyDown}
