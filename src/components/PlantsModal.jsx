@@ -5,7 +5,6 @@ import { GiWateringCan } from "react-icons/gi"; // 물뿌리개 아이콘
 import { LuSun } from "react-icons/lu"; // 태양 아이콘
 import { IoWaterOutline } from "react-icons/io5"; // 습도 물방울 아이콘
 import { CiTempHigh } from "react-icons/ci"; // 온도 아이콘
-
 import plantsData from "../data/plantsData.js"; // plantsData.js 파일을 불러옴
 
 const ModalContainer = styled.div`
@@ -157,7 +156,7 @@ const GridContainer2 = styled.div`
     top: 50%;
     left: 0;
     right: 0;
-    height: 1px; /* 가로 선 두께 */
+    height: 1px;
     transform: translateY(-50%);
   }
 
@@ -165,7 +164,7 @@ const GridContainer2 = styled.div`
     top: 0;
     bottom: 0;
     left: 50%;
-    width: 1px; /* 세로 선 두께 */
+    width: 1px;
     transform: translateX(-50%);
   }
 `;
@@ -176,6 +175,7 @@ const IconDiv = styled.div`
 const PlantsModal = ({ onClose, isOpen, plantName }) => {
   const [scrollOffset, setScrollOffset] = useState(64);
   const [plant, setPlant] = useState(null);
+
   useEffect(() => {
     const handleScroll = () => {
       const footerHeight = 150;
@@ -197,13 +197,12 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
   useEffect(() => {
     // plantName 값이 변경될 때마다 실행되는 로직
     const plantA = plantsData.find((plant) => plant.name === plantName);
-    setPlant(plantA);
+    setPlant(plantA || null); // plant가 없으면 null로 설정
   }, [plantName]);
 
-  // 모달 외부를 클릭했을 때 모달을 닫는 함수
   const handleModalContainerClick = (e) => {
-    e.stopPropagation(); // 모달 콘텐츠 클릭 시 이벤트 버블링을 막음
-    onClose(); // 모달 닫기
+    e.stopPropagation();
+    onClose();
   };
 
   return (
@@ -213,78 +212,83 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
       scrollOffset={scrollOffset}
     >
       <ModalContent onClick={(e) => e.stopPropagation()}>
-        {/* 모달 내용 클릭 시 닫히지 않도록 설정 */}
-        <HeadDivBox>
-          
-          <HeadLabel>{plantName}</HeadLabel>
-        </HeadDivBox>
+        {plant ? (
+          <>
+            <HeadDivBox>
+              <HeadLabel>{plantName}</HeadLabel>
+            </HeadDivBox>
 
-        <Frame>
-          <DivBox>
-            <ImageBox>
-              <img src={`images/plants/${plantName}.jpg`} alt={plantName} />
-            </ImageBox>
-          </DivBox>
-          <DivBox>
-            <OrangeLabel>{plant?.scientificName}</OrangeLabel>
-          </DivBox>
-          <DivBox>
-            <TitleLabel>{plant?.name}</TitleLabel>
-          </DivBox>
-          <DivBox>
-            <GridContainer1>
-              {plant?.attributes?.map((attribute) => (
-                <GridBox1 key={attribute}>{attribute}</GridBox1>
-              ))}
-            </GridContainer1>
-          </DivBox>
-          <DivBox>
-            <TextBox>{plant?.description}</TextBox>
-          </DivBox>
-          <DivBox>
-            {/* 2x2 컨테이터*/}
-            <GridContainer2>
-              {/*물주기 주기*/}
+            <Frame>
               <DivBox>
-                <IconDiv>
-                  <GiWateringCan />
-                </IconDiv>
-                <TextBox>{plant?.waterFrequency[0]}</TextBox>
-                <h5 style={{paddingBottom:"20px"}}>{plant?.waterFrequency[1]}</h5>
+                <ImageBox>
+                  <img src={`images/plants/${plantName}.jpg`} alt={plantName} />
+                </ImageBox>
               </DivBox>
-              {/*햇빛*/}
               <DivBox>
-                <IconDiv>
-                  <LuSun />
-                </IconDiv>
-                <TextBox>{plant?.light[0]}</TextBox>
-                <h5>{plant?.light[1]}</h5>
+                <OrangeLabel>{plant.scientificName || "정보 없음"}</OrangeLabel>
               </DivBox>
-              {/*습도*/}
               <DivBox>
-                <IconDiv>
-                  <IoWaterOutline />
-                </IconDiv>
-                <TextBox>{plant?.humidity[0]}</TextBox>
-                <h5>{plant?.humidity[1]}</h5>
+                <TitleLabel>{plant.name || "정보 없음"}</TitleLabel>
               </DivBox>
-              {/*온도*/}
               <DivBox>
-                <IconDiv>
-                  <CiTempHigh />
-                </IconDiv>
-                <TextBox>잘 자라는 온도</TextBox>
-                <h5>
-                  {plant?.temperature[0]}~{plant?.temperature[1]}℃의 온도에서 잘
-                  자라요
-                </h5>
+                <GridContainer1>
+                  {plant.attributes?.map((attribute) => (
+                    <GridBox1 key={attribute}>{attribute}</GridBox1>
+                  )) || <p>속성 정보가 없습니다.</p>}
+                </GridContainer1>
               </DivBox>
-            </GridContainer2>
-          </DivBox>
-        </Frame>
+              <DivBox>
+                <TextBox>{plant.description || "설명 없음"}</TextBox>
+              </DivBox>
+              <DivBox>
+                <GridContainer2>
+                  <DivBox>
+                    <IconDiv>
+                      <GiWateringCan />
+                    </IconDiv>
+                    <TextBox>
+                      {plant.waterFrequency?.[0] || "정보 없음"}
+                    </TextBox>
+                    <h5 style={{ paddingBottom: "20px" }}>
+                      {plant.waterFrequency?.[1] || "정보 없음"}
+                    </h5>
+                  </DivBox>
+                  <DivBox>
+                    <IconDiv>
+                      <LuSun />
+                    </IconDiv>
+                    <TextBox>{plant.sunlight?.[0] || "정보 없음"}</TextBox>
+                    <h5>{plant.sunlight?.[1] || "정보 없음"}</h5>
+                  </DivBox>
+                  <DivBox>
+                    <IconDiv>
+                      <IoWaterOutline />
+                    </IconDiv>
+                    <TextBox>{plant.humidity?.[0] || "정보 없음"}</TextBox>
+                    <h5>{plant.humidity?.[1] || "정보 없음"}</h5>
+                  </DivBox>
+                  <DivBox>
+                    <IconDiv>
+                      <CiTempHigh />
+                    </IconDiv>
+                    <TextBox>잘 자라는 온도</TextBox>
+                    <h5>
+                      {plant.temperature?.[0] || "정보 없음"}~
+                      {plant.temperature?.[1] || "정보 없음"}℃의 온도에서 잘
+                      자라요
+                    </h5>
+                  </DivBox>
+                </GridContainer2>
+              </DivBox>
+            </Frame>
+          </>
+        ) : (
+          <p>식물 정보가 없습니다.</p>
+        )}
       </ModalContent>
     </ModalContainer>
   );
 };
+
 
 export default PlantsModal;

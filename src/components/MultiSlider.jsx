@@ -1,98 +1,121 @@
 import React from "react";
 import styled from "styled-components";
+import { sunlightLevels } from "../constants";
 
 const Container = styled.div`
-  width: 40px;
-  height: 200px;
-  display: ${(props) => (props.isVisible ? "flex" : "none")};
+  display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: flex-end;
-  position: relative;
-  border-radius: 40px;
-  padding: 10px;
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
-  margin-bottom: 10px;
+  margin: 20px 0 20px 0;
+`;
 
-  background: ${(props) =>
-    props.type === "temperature"
-      ? "linear-gradient(to bottom, #ff6f6f, #ff4c4c)"
-      : props.type === "humidity"
-      ? "linear-gradient(to bottom, #4ca1ff, #63baff)"
-      : "linear-gradient(to bottom, #fddb92, #d1a24c)"};
+const SliderWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px; /* 슬라이더 바 간의 간격 증가 */
 `;
 
 const Slider = styled.input`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translateX(-50%) rotate(-90deg);
-  width: 180px;
-  height: 10px;
+  width: 400px;
+  height: 3px; /* 바의 높이 */
   cursor: pointer;
+  background: ${({ value, min, max }) => {
+    const percentage = ((value - min) / (max - min)) * 100;
+    return `linear-gradient(to right, #007bff ${percentage}%, #e0e0e0 ${percentage}%)`;
+  }};
+  border-radius: 5px;
+  appearance: none;
+  position: relative;
+
+  /* 슬라이더 바 스타일 */
+  &::-webkit-slider-runnable-track {
+    height: 10px;
+    border-radius: 5px;
+  }
+
+  /* 슬라이더 thumb 스타일 */
+  &::-webkit-slider-thumb {
+    width: 20px;
+    height: 20px;
+    background: #007bff; /* 네모의 배경 색상 */
+    cursor: pointer;
+    appearance: none;
+    margin-top: -5px; /* 중앙 정렬 */
+    border: 2px solid #ffffff; /* thumb 테두리 */
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2); /* shadow 효과 */
+  }
+
+  /* 마우스 오버 시 thumb 색상 변화 */
+  &:hover::-webkit-slider-thumb {
+    background: #0056b3; /* 마우스 오버 시 색상 */
+  }
 `;
 
 const SliderLabel = styled.label`
+  display: flex;
+  justify-content: space-between;
+  width: 400px;
   font-size: 16px;
-  margin-bottom: 10px;
   font-weight: bold;
-  color: ${(props) =>
-    props.type === "temperature"
-      ? "#ff4c4c"
-      : props.type === "humidity"
-      ? "#4ca1ff"
-      : "#d1932c"}; /* 타입에 따라 라벨 색상 변경 */
 `;
 
-const MultiSlider = ({ isVisible, type, value, onChange, onChangeEnd }) => {
-  const sunlightLevels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
+const MultiSlider = ({ type, value, onChange, onChangeEnd }) => {
+
 
   const getLabel = () => {
     if (type === "temperature") {
-      return `온도: ${value}°C`;
+      return `온도 ${value}°C`;
     } else if (type === "humidity") {
-      return `습도: ${value}%`;
+      return `습도 ${value}%`;
     } else if (type === "light") {
-      // 숫자인 경우와 문자열인 경우 모두 처리
-      const lightIndex = typeof value === 'string' 
+      const lightIndex = typeof value === "string" 
         ? sunlightLevels.indexOf(value) + 1 
         : value;
-      return `햇빛: ${sunlightLevels[lightIndex - 1] || "정보 없음"}`;
+      return `햇빛 ${sunlightLevels[lightIndex - 1] || "정보 없음"}`;
     }
     return "";
   };
-
+  
   const getSliderProps = () => {
     if (type === "temperature") {
-      return { min: "0", max: "50" };
+      return { min: 0, max: 50 };
     } else if (type === "humidity") {
-      return { min: "0", max: "100" };
+      return { min: 0, max: 100 };
     } else if (type === "light") {
-      return { min: "1", max: "5" };
+      return { min: 1, max: 5 };
     }
     return {};
   };
+  
+  const handleMouseDown = () => {
+    console.log(`${type} 슬라이더 조작 시작`);
+  };
 
   const handleMouseUp = (e) => {
+    console.log(`${type} 슬라이더 조작 완료`);
     if (onChangeEnd) {
       onChangeEnd(e);
     }
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      <SliderLabel type={type}>{getLabel()}</SliderLabel>
-      <Container isVisible={isVisible} type={type}>
+    <Container>
+      <SliderWrapper>
+        <SliderLabel type={type}>
+          <span>{getLabel().split(" ")[0]}</span>
+          <span>{getLabel().split(" ")[1]}</span>
+        </SliderLabel>
         <Slider
           type="range"
           value={value}
           onChange={onChange}
+          onMouseDown={handleMouseDown}
           onMouseUp={handleMouseUp}
           onTouchEnd={handleMouseUp}
           {...getSliderProps()}
         />
-      </Container>
-    </div>
+      </SliderWrapper>
+    </Container>
   );
 };
 

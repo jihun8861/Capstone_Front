@@ -5,6 +5,8 @@ import Main from "../components/Main";
 import InfoBox from "../components/InfoBox";
 import Modal from "../components/Modal";
 import MultiSlider from "../components/MultiSlider";
+import StatusGauge from "../components/StatusGauge";
+import { sunlightLevels } from "../constants";
 import Swal from "sweetalert2";
 import {
   MdOutlineKeyboardDoubleArrowRight,
@@ -12,11 +14,8 @@ import {
 } from "react-icons/md";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
-import { FaSeedling } from "react-icons/fa";
 import { GiWateringCan } from "react-icons/gi";
-import { toast, ToastContainer } from "react-toastify";
 import axios from "axios";
-import "react-toastify/dist/ReactToastify.css";
 
 const Container = styled.div`
   width: 100%;
@@ -29,26 +28,10 @@ const Container = styled.div`
 const Frame = styled.div`
   width: 100%;
   height: 100%;
-  border: solid 1px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-top: 120px;
-`;
-
-const TitleFrame = styled.div`
-  width: 100%;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: solid 1px;
-  gap: 10px;
-  font-size: 20px;
-  font-weight: bold;
-  background-color: #63b26d;
-  color: white;
-  margin-bottom: 30px;
+  padding-top: 170px;
 `;
 
 const PlantContainer = styled.div`
@@ -59,9 +42,8 @@ const PlantContainer = styled.div`
 `;
 
 const LeftFrame = styled.div`
-  width: 25%;
+  width: 28%;
   height: 100%;
-  border: solid 1px;
   display: flex;
   align-items: center;
   padding-left: 20px;
@@ -74,7 +56,7 @@ const ArrowIcon = styled.div`
 `;
 
 const MainContainer = styled.div`
-  width: 50%;
+  width: 47%;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -82,31 +64,51 @@ const MainContainer = styled.div`
 
 const MainFrame = styled.div`
   width: 100%;
-  height: 90%;
-  border: solid 1px;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-`;
-
-const MainBottomFrame = styled.div`
-  width: 100%;
-  height: 10%;
-  position: relative;
+  padding-top: 100px;
 `;
 
 const RightFrame = styled.div`
   width: 25%;
   height: 100%;
-  border: solid 1px;
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
+`;
+
+const InfoFrame = styled.div`
+  width: 100%;
+  height: 25%;
+`;
+
+const ControlFrame = styled.div`
+  width: 100%;
+  height: 35%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 0 50px 20px;
+`;
+
+const StateFrame = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 20%;
+  padding-bottom: 40px;
+`
+
+const RightBottom = styled.div`
+  width: 100%;
+  height: 20%;
+  position: relative;
 `;
 
 const WaterButton = styled.button`
   width: 160px;
-  height: 60px;
+  height: 55px;
   border: 1px solid #63b26d;
   border-radius: 30px;
   background-color: #63b26d;
@@ -135,40 +137,11 @@ const WaterButton = styled.button`
 const WaterButtonContainer = styled.div`
   position: absolute;
   bottom: 20px;
-  right: 20px;
-`;
-
-const InfoFrame = styled.div`
-  width: 100%;
-  height: 200px;
-  border: solid 1px;
-`;
-
-const ControlFrame = styled.div`
-  width: 100%;
-  height: 300px;
-  border: solid 1px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  padding-bottom: 50px;
-`;
-
-const ControlBtn = styled.button`
-  width: 120px;
-  height: 40px;
-  margin: 0 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f8f9fa;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+  left: 20px;
 `;
 
 const WaterBarContainer = styled.div`
-  width: 200px;
+  width: 400px;
   height: 20px;
   border: 1px solid #63b26d;
   border-radius: 10px;
@@ -197,7 +170,7 @@ const AlokasiaModel = () => {
 };
 
 const SanseveriaModel = () => {
-  const { scene } = useGLTF("/models/Sanseveria/Sanseveria8.glb");
+  const { scene } = useGLTF("/models/Sanseveria/Sansevieria1.glb");
   return <primitive object={scene} scale={10} position={[0, 0, 0]} />;
 };
 
@@ -207,25 +180,66 @@ const GrowingContent = () => {
   const [userEmail, setUserEmail] = useState("");
 
   const [plantName, setPlantName] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [showSlider, setShowSlider] = useState(null);
   const [temperature, setTemperature] = useState(plantData.temperature);
+  const [nowtem, setNowtem] = useState(plantData.nowtem);
   const [humidity, setHumidity] = useState(plantData.humidity);
   const [light, setLight] = useState(plantData.light);
   const [waterLevel, setWaterLevel] = useState(plantData.water);
 
-  // 10분마다 리렌더링 트리거
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTemperature((prev) => prev);
-      setHumidity((prev) => prev);
-      setLight((prev) => prev);
-      setWaterLevel((prev) => prev);
-    }, 10 * 60 * 1000);
-  
-    return () => clearInterval(interval);
-  }, []);
+  const calculateStatus = () => {
+    let suitableConditions = 0;
 
+    // 온도 조건 평가
+    if (temperature < 8 || temperature > 39) return "매우 나쁨"; // ±10 범위를 벗어난 경우
+    if (temperature >= 18 && temperature <= 29) suitableConditions += 1;
+
+    // 다른 조건 평가
+    if (humidity >= 70) suitableConditions += 1;
+    if (["매우 약함", "약함", "보통"].includes(sunlightLevels[light - 1])) suitableConditions += 1;
+    if (waterLevel > 0) suitableConditions += 1;
+
+    // 상태 값 계산
+    if (suitableConditions === 4) return "매우 좋음";
+    if (suitableConditions === 3) return "좋음";
+    if (suitableConditions === 2) return "보통";
+    if (suitableConditions === 1) return "나쁨";
+    return "매우 나쁨";
+};
+
+  useEffect(() => {
+    // 10초마다 식물 데이터 새로고침
+    const fetchPlantData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token && userEmail) {
+          const response = await axios.post(
+            "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
+            { 
+              username: userEmail
+            }
+          );
+          
+          if (response.data) {
+            // nowtem과 waterLevel 업데이트
+            setNowtem(response.data.nowtem ?? nowtem);
+            setWaterLevel(response.data.water ?? waterLevel);
+          }
+        }
+      } catch (error) {
+        console.error("식물 데이터 새로고침 중 오류 발생:", error);
+      }
+    };
+  
+    fetchPlantData();
+  
+    // 10초마다 반복
+    const intervalId = setInterval(fetchPlantData, 10000);
+  
+    return () => clearInterval(intervalId);
+  }, [userEmail]);
+  
   // 초기 사용자 이메일 가져오기
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -234,7 +248,9 @@ const GrowingContent = () => {
         if (token) {
           const response = await axios.post(
             "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/user/getuser",
-            { token }
+            { 
+              token
+            }
           );
           if (response.data && response.data.email) {
             setUserEmail(response.data.email);
@@ -247,24 +263,27 @@ const GrowingContent = () => {
     fetchUserInfo();
   }, []);
 
-  // 식물 데이터 업데이트 함수
   const updatePlantData = async (updatedData) => {
     try {
       if (!userEmail) {
         console.error("사용자 이메일이 없습니다.");
         return;
       }
-
+  
+      // 상태 값 계산
+      const state = calculateStatus();
+  
       const response = await axios.post(
         "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/update/plant",
         {
           username: userEmail,
-          ...updatedData
+          ...updatedData,
+          state, // DTO 형식으로 상태 값 추가
         }
       );
-
+  
       if (response.status === 200) {
-        console.log("식물 데이터 업데이트 성공:", updatedData);
+        console.log("식물 데이터 업데이트 성공:", { ...updatedData, state });
       }
     } catch (error) {
       console.error("식물 데이터 업데이트 중 오류 발생:", error);
@@ -277,20 +296,30 @@ const GrowingContent = () => {
       });
     }
   };
+  
+  useEffect(() => {
+    if (plantData.light) {
+      const lightIndex = sunlightLevels.indexOf(plantData.light) + 1;
+      setLight(lightIndex || 3);
+    }
+  }, [plantData]);
 
-  // 식물 데이터 초기화
+
   useEffect(() => {
     if (plantData.plantName) {
       setPlantName(plantData.plantName);
-      setTemperature(plantData.temperature ?? 20);
+      setTemperature(plantData.temperature ?? 25);
       setHumidity(plantData.humidity ?? 50);
-      setLight(plantData.light ?? "보통");
+      const lightIndex = sunlightLevels.indexOf(plantData.light);
+      setLight(lightIndex >= 0 ? lightIndex + 1 : 3); // 유효한 값이면 숫자로 변환, 기본값 3 ("보통")
+      
       setWaterLevel(plantData.water ?? 0);
     } else {
       const savedPlant = localStorage.getItem("selectedPlant");
       setPlantName(savedPlant || "");
     }
   }, [plantData]);
+  
 
   // 온도 변경 핸들러
   const handleTemperatureChange = (e) => {
@@ -299,8 +328,10 @@ const GrowingContent = () => {
   };
 
   const handleTemperatureChangeEnd = () => {
-    updatePlantData({ temperature: temperature });
+    const status = calculateStatus(); // 상태 계산
+    updatePlantData({ temperature: temperature, status });
   };
+  
 
   // 습도 변경 핸들러
   const handleHumidityChange = (e) => {
@@ -309,27 +340,27 @@ const GrowingContent = () => {
   };
 
   const handleHumidityChangeEnd = () => {
-    updatePlantData({ humidity: humidity });
+    const status = calculateStatus(); // 상태 계산
+    updatePlantData({ humidity: humidity, status });
   };
-
-  // 햇빛 변경 핸들러
+  
   const handleLightChange = (e) => {
-    const newLight = Number(e.target.value);
-    setLight(newLight);
+    const newLight = Number(e.target.value); // 문자열을 숫자로 변환
+    setLight(newLight); // 상태 업데이트
   };
-
+  
   const handleLightChangeEnd = () => {
     const lightLabels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
-    const lightValue = lightLabels[light - 1];
-    updatePlantData({ light: lightValue });
+    const lightValue = lightLabels[light - 1]; // 숫자를 텍스트로 변환
+    const status = calculateStatus(); // 상태 계산
+    updatePlantData({ light: lightValue, status });
   };
-
-  // 물주기 핸들러
+  
   const handleWatering = () => {
-    if (waterLevel >= 100) {
+    if (waterLevel > 10) {
       Swal.fire({
         title: "❌ 물을 줄 수 없습니다!",
-        text: "현재 물 양이 이미 최대치입니다.",
+        text: "현재 물 양이 너무 많습니다. 물이 10% 이하일 때만 줄 수 있습니다.",
         icon: "warning",
         confirmButtonText: "확인",
         confirmButtonColor: "#ff6b6b",
@@ -339,11 +370,12 @@ const GrowingContent = () => {
       });
       return;
     }
-
-    const newWaterLevel = Math.min(waterLevel + 20, 100);
+  
+    const newWaterLevel = Math.min(waterLevel + 100, 100);
     setWaterLevel(newWaterLevel);
-    updatePlantData({ water: newWaterLevel });
-
+    const status = calculateStatus(); // 상태 계산
+    updatePlantData({ water: newWaterLevel, status });
+  
     Swal.fire({
       title: "💧 물을 주었습니다!",
       text: `현재 물 양이 ${newWaterLevel}%입니다.`,
@@ -355,6 +387,7 @@ const GrowingContent = () => {
       },
     });
   };
+  
 
   // 모달 및 슬라이더 토글 핸들러
   const handleArrowClick = () => {
@@ -365,18 +398,9 @@ const GrowingContent = () => {
     setIsModalOpen(false);
   };
 
-  const toggleSlider = (type) => {
-    setShowSlider((prev) => (prev === type ? null : type));
-  };
-
   return (
     <Container>
       <Frame>
-        <TitleFrame>
-          <FaSeedling />
-          {plantName && `${plantName}`}
-        </TitleFrame>
-
         <PlantContainer>
           <LeftFrame>
             <ArrowIcon onClick={handleArrowClick}>
@@ -400,6 +424,8 @@ const GrowingContent = () => {
                 <directionalLight position={[2, 5, 2]} intensity={1.2} />
                 <OrbitControls
                   enableZoom={false}
+                  minDistance={7} // 줌 최소 거리
+                  maxDistance={15} // 줌 최대 거리
                   maxPolarAngle={Math.PI / 2}
                   rotateSpeed={0.7}
                   target={[0, 0, 0]}
@@ -408,24 +434,12 @@ const GrowingContent = () => {
                 {plantName === "산세베리아 슈퍼바" && <SanseveriaModel />}
               </Canvas>
             </MainFrame>
-
-            <MainBottomFrame>
-              <WaterButtonContainer>
-                <WaterButton onClick={handleWatering}>
-                  <GiWateringCan style={{ fontSize: "22px" }} /> 물 주기
-                </WaterButton>
-                <WaterBarContainer>
-                  <WaterBar level={waterLevel} />
-                </WaterBarContainer>
-                <WaterLevelText>{`현재 물양: ${waterLevel}%`}</WaterLevelText>
-              </WaterButtonContainer>
-            </MainBottomFrame>
           </MainContainer>
 
           <RightFrame>
             <InfoFrame>
               <InfoBox
-                temperature={temperature}
+                nowtem={nowtem}
                 humidity={humidity}
                 light={light}
               />
@@ -439,9 +453,6 @@ const GrowingContent = () => {
                   onChange={handleTemperatureChange}
                   onChangeEnd={handleTemperatureChangeEnd}
                 />
-                <ControlBtn onClick={() => toggleSlider("temperature")}>
-                  온도조절
-                </ControlBtn>
               </div>
               <div>
                 <MultiSlider
@@ -451,9 +462,6 @@ const GrowingContent = () => {
                   onChange={handleHumidityChange}
                   onChangeEnd={handleHumidityChangeEnd}
                 />
-                <ControlBtn onClick={() => toggleSlider("humidity")}>
-                  습도조절
-                </ControlBtn>
               </div>
               <div>
                 <MultiSlider
@@ -463,18 +471,29 @@ const GrowingContent = () => {
                   onChange={handleLightChange}
                   onChangeEnd={handleLightChangeEnd}
                 />
-                <ControlBtn onClick={() => toggleSlider("light")}>
-                  햇빛조절
-                </ControlBtn>
               </div>
             </ControlFrame>
+
+            <StateFrame>
+            <StatusGauge status={calculateStatus()} />
+            </StateFrame>
+
+            <RightBottom>
+              <WaterButtonContainer>
+                <WaterButton onClick={handleWatering}>
+                  <GiWateringCan style={{ fontSize: "22px" }} /> 물 주기
+                </WaterButton>
+                <WaterBarContainer>
+                  <WaterBar level={waterLevel} />
+                </WaterBarContainer>
+                <WaterLevelText>{`현재 물양: ${waterLevel}%`}</WaterLevelText>
+              </WaterButtonContainer>
+            </RightBottom>
           </RightFrame>
         </PlantContainer>
 
         <Modal onClose={closeModal} isOpen={isModalOpen} />
       </Frame>
-
-      <ToastContainer />
     </Container>
   );
 };

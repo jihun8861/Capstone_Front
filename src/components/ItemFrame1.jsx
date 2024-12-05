@@ -44,6 +44,12 @@ const MainText = styled.div`
   font-size: 82px;
   font-weight: bold;
   color: #3b5143;
+  p {
+    height: 45%;
+  }
+  span {
+    height: 55%;
+  }
 `;
 
 const BottomText = styled.div`
@@ -132,7 +138,7 @@ const ItemFrame1 = () => {
     } else {
       navigate("/signin"); // 비로그인 상태면 로그인 페이지로 이동
     }
-  }
+  };
   return (
     <Container>
       <LeftFrame>
@@ -141,7 +147,8 @@ const ItemFrame1 = () => {
             <p>GROW A PLANTS</p>
           </TitleText>
           <MainText>
-            <p>Grow Garden with Us!</p>
+            <p>Grow Garden </p>
+            <span>with Us!</span>
           </MainText>
           <BottomText>
             In today's rapidly evolving digital landscape, it is essential to

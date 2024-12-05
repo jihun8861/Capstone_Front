@@ -21,6 +21,21 @@ import {
   HomePageDiv,
 } from "../components/Sign";
 
+// ______or______ << 처럼 생긴 컴포넌트를 감싸는 박스
+const DivideLineBox = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 1rem 0rem 1rem 0rem; /* 위, 오른쪽, 아래, 왼쪽 여백 */
+`;
+
+const DivideLine = styled.div`
+  height: 1px;
+  flex: 1;
+  background-color: #000000;
+`;
+
+
 const SignUpContent = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -164,9 +179,10 @@ const SignUpContent = () => {
 
   return (
     <Container>
-      <HomePageButton navigate={navigate} />
+     
       <Frame1>
-        <Frame2>
+        <Frame2> 
+          <HomePageButton navigate={navigate} />
           <Frame3Top>
             <H2Sign>회원가입</H2Sign>
             <P3Text>VirtuaLeaf의 회원이 되어보세요!</P3Text>
@@ -174,7 +190,7 @@ const SignUpContent = () => {
               <InputWrapper>
                 <Input
                   type="email"
-                  placeholder="이메일을 입력해주세요"
+                  placeholder="✉이메일을 입력해주세요"
                   value={email}
                   onChange={handleEmail}
                   onKeyDown={handleKeyDown}
@@ -185,15 +201,16 @@ const SignUpContent = () => {
               {emailSuccess && <P3Text3>{emailSuccess}</P3Text3>}
               <Input
                 type="text"
-                placeholder="이름을 입력해 주세요"
+                placeholder="🌱이름을 입력해 주세요"
                 value={name}
                 onChange={handleName}
                 onKeyDown={handleKeyDown}
               />
+ 
               <InputWrapper>
                 <Input
                   type={showPassword ? "text" : "password"}
-                  placeholder="비밀번호를 입력해주세요"
+                  placeholder="🔐비밀번호를 입력해주세요"
                   value={pw}
                   onChange={handlePw}
                   onKeyDown={handleKeyDown}
@@ -202,7 +219,7 @@ const SignUpContent = () => {
               </InputWrapper>
               <Input
                 type={showPassword ? "text" : "password"}
-                placeholder="한번 더 입력해주세요"
+                placeholder="✅한번 더 입력해주세요"
                 value={confirmPw}
                 onChange={handleConfirmPw}
                 onKeyDown={handleKeyDown}

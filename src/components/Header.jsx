@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { RiUserLine } from "react-icons/ri";
 import { RxHamburgerMenu } from "react-icons/rx";
 import axios from "axios";
@@ -55,7 +55,7 @@ const NavMenu = styled.div`
   gap: 30px;
 `;
 
-const NavItem = styled.a`
+const NavItem = styled(Link)`
   font-size: 21px;
   font-weight: bold;
   text-decoration: none;
@@ -140,7 +140,6 @@ const Header = ({ isHome }) => {
             setUserEmail(email);
             setIsLoggedIn(true);
   
-            // 백엔드에서 selectedPlant 불러오기
             const plantResponse = await axios.post(
               "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
               { 
@@ -150,7 +149,7 @@ const Header = ({ isHome }) => {
   
             if (plantResponse.data && plantResponse.data.plantname) {
               const plantName = plantResponse.data.plantname;
-              localStorage.setItem("selectedPlant", plantName); // 로컬스토리지에 저장
+              localStorage.setItem("selectedPlant", plantName);
               console.log(`사용자의 선택된 식물: ${plantName}`);
             }
           }
@@ -162,8 +161,6 @@ const Header = ({ isHome }) => {
   
     fetchUserInfo();
   }, []);
-  
-
 
   useEffect(() => {
     const handleScroll = () => {
@@ -178,20 +175,18 @@ const Header = ({ isHome }) => {
   }, []);
 
   const handleLogoutClick = () => {
-    // 사용자 관련 데이터 초기화
-    localStorage.removeItem("token");         // 토큰 삭제
-    localStorage.removeItem("access_token"); // accessToken 삭제
-    localStorage.removeItem("selectedPlant"); // 선택된 식물 삭제
-    
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("selectedPlant");
     setIsLoggedIn(false);
     setUserEmail("");
     navigate("/");
   };
-  
-  // 추가: 토큰 삭제 버튼 핸들러
+
   const handleClearTokenClick = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("access_token");
+    localStorage.removeItem("selectedPlant");
     alert("토큰이 삭제되었습니다.");
   };
 
@@ -205,17 +200,17 @@ const Header = ({ isHome }) => {
   
       const response = await axios.post(
         "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/getplant",
-        {
-          username: userEmail,
-        }
+        { username: userEmail }
       );
   
       const plantData = response.data;
   
-      if (plantData && plantData.state === "정상") {
+      if (plantData && plantData.plantname) {
+        // 선택된 식물이 있는 경우
         navigate("/growing", { state: { plantData } });
       } else {
-        navigate("/select", { state: { plantData } });
+        // 선택된 식물이 없는 경우
+        navigate("/select", { state: { plantData: null } });
       }
     } catch (error) {
       console.error("사용자 정보를 가져오는 중 오류 발생:", error);
@@ -223,26 +218,27 @@ const Header = ({ isHome }) => {
     }
   };
   
+
   const handleLogoClick = () => {
     navigate("/");
-  }
+  };
 
   return (
     <Container atTop={atTop} isHome={isHome}>
       <Frame>
         <HeaderFrame>
           <Logo onClick={handleLogoClick}>
-              <img src="images/logo.png" alt="logo" />
+            <img src="images/logo.png" alt="logo" />
           </Logo>
 
           <NavMenu>
-            <NavItem href="/plants" atTop={atTop} isHome={isHome}>
+            <NavItem to="/plants" atTop={atTop} isHome={isHome}>
               Plants
             </NavItem>
-            <NavItem href="/contact" atTop={atTop} isHome={isHome}>
+            <NavItem to="/contact" atTop={atTop} isHome={isHome}>
               Contact
             </NavItem>
-            <NavItem href="/Virtual" atTop={atTop} isHome={isHome}>
+            <NavItem to="/virtual" atTop={atTop} isHome={isHome}>
               Virtual
             </NavItem>
           </NavMenu>
@@ -262,7 +258,6 @@ const Header = ({ isHome }) => {
             </>
           )}
 
-          {/* 토큰 삭제 버튼 */}
           <button onClick={handleClearTokenClick} style={{ marginLeft: "10px" }}>
             토큰 삭제
           </button>

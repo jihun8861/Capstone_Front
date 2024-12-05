@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { FaThermometerHalf, FaTint, FaSun } from "react-icons/fa";
+import { sunlightLevels } from "../constants";
 
 const Container = styled.div`
   width: 100%;
@@ -9,7 +10,6 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const TitleFrame = styled.div`
@@ -71,14 +71,11 @@ const Value = styled.div`
   font-weight: bold;
 `;
 
-const InfoBox = ({ temperature, humidity, light }) => {
-  const sunlightLevels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
-  
-  // light 값을 숫자로 변환
-  const lightIndex = typeof light === 'string' 
-    ? sunlightLevels.indexOf(light) + 1 
+const InfoBox = ({ nowtem, humidity, light }) => {
+  const lightIndex = typeof light === 'string'
+    ? sunlightLevels.indexOf(light) + 1
     : light;
-  
+
   const lightLevel = sunlightLevels[lightIndex - 1] || "정보 없음";
 
   return (
@@ -89,11 +86,10 @@ const InfoBox = ({ temperature, humidity, light }) => {
           <IconFrame color="#e57373">
             <FaThermometerHalf />
           </IconFrame>
-          <Gauge color="#e57373" percentage={(temperature / 50) * 100}>
-            {temperature ?? "N/A"}℃
+          <Gauge color="#e57373" percentage={(nowtem / 50) * 100}>
+            {nowtem ?? "N/A"}℃ 
           </Gauge>
-          <Label>온도</Label>
-          <Value>{temperature ?? "N/A"} ℃</Value>
+          <Value>{nowtem ?? "N/A"} ℃</Value>
         </MainBox>
 
         <MainBox>
@@ -103,7 +99,6 @@ const InfoBox = ({ temperature, humidity, light }) => {
           <Gauge color="#4fc3f7" percentage={humidity || 0}>
             {humidity ?? "N/A"}%
           </Gauge>
-          <Label>습도</Label>
           <Value>{humidity ?? "N/A"} %</Value>
         </MainBox>
 
@@ -111,18 +106,18 @@ const InfoBox = ({ temperature, humidity, light }) => {
           <IconFrame color="#ffd54f">
             <FaSun />
           </IconFrame>
-          <Gauge 
-            color="#ffd54f" 
+          <Gauge
+            color="#ffd54f"
             percentage={((lightIndex || 1) / 5) * 100}
           >
             {lightLevel}
           </Gauge>
-          <Label>조도</Label>
           <Value>{lightLevel}</Value>
         </MainBox>
       </MainFrame>
     </Container>
   );
 };
+
 
 export default InfoBox;

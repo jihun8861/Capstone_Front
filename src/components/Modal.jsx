@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { IoClose } from "react-icons/io5";
-import PlantsModal from "./PlantsModal";
+import MainPlantsModal from "./MainPlantsModal";
 
 const ModalContainer = styled.div`
   position: absolute;
   top: 0;
-  width: 480px;
+  width: 25%;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -15,26 +14,11 @@ const ModalContainer = styled.div`
   transition: transform 0.3s ease;
   z-index: 2;
   pointer-events: ${({ isOpen }) => (isOpen ? "auto" : "none")};
-  overflow-y: hidden;
-  overflow-x: hidden;
-`;
-
-const ModalFrame = styled.div`
-  position: relative;
-`
-
-const CloseButton = styled(IoClose)`
-  position: absolute;
-  top: 14%;
-  right: 5px;
-  font-size: 32px;
-  cursor: pointer;
-  z-index: 1000;
 `;
 
 const Modal = ({ onClose, isOpen }) => {
   const [plantName, setPlantName] = useState("");
-  const [isPlantsModalOpen, setIsPlantsModalOpen] = useState(false);
+  const [isPlantsModalOpen, setIsPlantsModalOpen] = useState(true);
 
   useEffect(() => {
     const selectedPlant = localStorage.getItem("selectedPlant");
@@ -42,7 +26,6 @@ const Modal = ({ onClose, isOpen }) => {
   }, []);
 
   const openPlantsModal = () => setIsPlantsModalOpen(true);
-  const closePlantsModal = () => setIsPlantsModalOpen(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -61,13 +44,11 @@ const Modal = ({ onClose, isOpen }) => {
   return (
     <ModalContainer isOpen={isOpen}>
         {isPlantsModalOpen && (
-          <PlantsModal
+          <MainPlantsModal
             isOpen={isPlantsModalOpen}
-            onClose={closePlantsModal}
             plantName={plantName}
           />
         )}
-      <CloseButton onClick={onClose} />
     </ModalContainer>
   );
 };

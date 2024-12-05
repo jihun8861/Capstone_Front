@@ -1,0 +1,1 @@
+export const sunlightLevels = ["매우약함", "약함", "보통", "강함", "매우강함"];
