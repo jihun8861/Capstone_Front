@@ -22,9 +22,7 @@ const ModalContainer = styled.div`
 
   width: 100vw; /* 화면의 100% 크기로 설정 */
   max-width: 500px; /* 최대 1000px 크기로 설정 */
-  height: ${({ scrollOffset }) =>
-    `calc(100% - 50px - ${scrollOffset}px)`}; /* 스크롤 위치에 따른 높이 설정 */
-
+  height: 100%;
   transform: ${({ isOpen }) =>
     isOpen ? "translateX(0)" : "translateX(100%)"}; /* 우측에서 슬라이드 인 */
   transition: transform 0.3s ease;
@@ -133,7 +131,7 @@ const GridBox1 = styled.div`
 `;
 
 const TextBox = styled.h4`
-    padding-bottom: 3px;
+  padding-bottom: 3px;
 `;
 
 const GridContainer2 = styled.div`
@@ -215,8 +213,8 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         {/* 모달 내용 클릭 시 닫히지 않도록 설정 */}
         <HeadDivBox>
-          
           <HeadLabel>{plantName}</HeadLabel>
+          <CloseButton onClick={onClose} />
         </HeadDivBox>
 
         <Frame>
@@ -249,24 +247,26 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
                 <IconDiv>
                   <GiWateringCan />
                 </IconDiv>
-                <TextBox>{plant?.waterFrequency[0]}</TextBox>
-                <h5 style={{paddingBottom:"20px"}}>{plant?.waterFrequency[1]}</h5>
+                <TextBox>{plant?.waterFrequency?.[0]}</TextBox>
+                <h5 style={{ paddingBottom: "20px" }}>
+                  {plant?.waterFrequency?.[1]}
+                </h5>
               </DivBox>
               {/*햇빛*/}
               <DivBox>
                 <IconDiv>
                   <LuSun />
                 </IconDiv>
-                <TextBox>{plant?.light[0]}</TextBox>
-                <h5>{plant?.light[1]}</h5>
+                <TextBox>{plant?.light?.[0]}</TextBox>
+                <h5>{plant?.light?.[1]}</h5>
               </DivBox>
               {/*습도*/}
               <DivBox>
                 <IconDiv>
                   <IoWaterOutline />
                 </IconDiv>
-                <TextBox>{plant?.humidity[0]}</TextBox>
-                <h5>{plant?.humidity[1]}</h5>
+                <TextBox>{plant?.humidity?.[0]}</TextBox>
+                <h5>{plant?.humidity?.[1]}</h5>
               </DivBox>
               {/*온도*/}
               <DivBox>
@@ -275,8 +275,8 @@ const PlantsModal = ({ onClose, isOpen, plantName }) => {
                 </IconDiv>
                 <TextBox>잘 자라는 온도</TextBox>
                 <h5>
-                  {plant?.temperature[0]}~{plant?.temperature[1]}℃의 온도에서 잘
-                  자라요
+                  {plant?.temperature?.[0]}~{plant?.temperature?.[1]}℃의
+                  온도에서 잘 자라요
                 </h5>
               </DivBox>
             </GridContainer2>
