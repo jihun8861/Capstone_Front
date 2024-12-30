@@ -61,7 +61,6 @@ const SliderLabel = styled.label`
 
 const MultiSlider = ({ type, value, onChange, onChangeEnd }) => {
 
-
   const getLabel = () => {
     if (type === "temperature") {
       return `온도 ${value}°C`;

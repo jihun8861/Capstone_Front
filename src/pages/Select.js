@@ -162,7 +162,8 @@ const SelectContent = () => {
         { 
           username: email, 
           plantname: plantName, 
-          createtime: createTime }
+          createtime: createTime
+         }
       );
   
       if (response.status === 200) {
@@ -186,8 +187,6 @@ const SelectContent = () => {
       console.error("식물 선택 중 오류:", error);
     }
   };
-  
-  
 
   return (
     <Container>

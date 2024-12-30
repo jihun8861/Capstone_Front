@@ -96,7 +96,7 @@ const StateFrame = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  height: 20%;
+  height: 10%;
   padding-bottom: 40px;
 `
 
@@ -164,15 +164,57 @@ const WaterLevelText = styled.div`
   margin-top: 5px;
 `;
 
-const AlokasiaModel = () => {
-  const { scene } = useGLTF("/models/Alokasia/Alokasia10.glb");
-  return <primitive object={scene} scale={10} position={[0, 0, 0]} />;
-};
+const ScoreFrame = styled.div`
+  width: 100%;
+  height: 10%;
+`;
 
-const SanseveriaModel = () => {
-  const { scene } = useGLTF("/models/Sanseveria/Sansevieria1.glb");
-  return <primitive object={scene} scale={10} position={[0, 0, 0]} />;
-};
+const ScoreContainer = styled.div`
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 10px;
+`;
+
+const ScoreText = styled.p`
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #333;
+`;
+
+const ScoreInputContainer = styled.div`
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+`;
+
+const ScoreInput = styled.input`
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 100px;
+`;
+
+const ScoreButton = styled.button`
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #63b26d;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #519957;
+  }
+`;
+
+const ModelText = styled.p`
+  margin: 0;
+  font-size: 14px;
+  color: #333;
+`;
 
 const GrowingContent = () => {
   const location = useLocation();
@@ -187,27 +229,159 @@ const GrowingContent = () => {
   const [humidity, setHumidity] = useState(plantData.humidity);
   const [light, setLight] = useState(plantData.light);
   const [waterLevel, setWaterLevel] = useState(plantData.water);
+  const [plantScore, setPlantScore] = useState(plantData.score || 0);
 
-  const calculateStatus = () => {
+  const [currentModelNumber, setCurrentModelNumber] = useState(null);
+
+  const [scoreInput, setScoreInput] = useState('');
+
+  const handleScoreInputChange = (e) => {
+    setScoreInput(e.target.value);
+  };
+
+// handleScoreSubmit 함수를 다음과 같이 수정
+const handleScoreSubmit = async () => {
+  const additionalScore = parseInt(scoreInput);
+  if (isNaN(additionalScore) || additionalScore < 0) {
+    Swal.fire({
+      title: "잘못된 입력",
+      text: "유효한 점수를 입력해주세요.",
+      icon: "error",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#ff6b6b",
+    });
+    return;
+  }
+
+  const newTotalScore = plantScore + additionalScore; // 현재 점수에 입력된 점수를 더함
+
+  try {
+    const response = await axios.post(
+      "https://port-0-virtualleaf-m1hzfdpj892e64c7.sel4.cloudtype.app/plant/add/score",
+      {
+        username: userEmail,
+        score: additionalScore // 더할 점수만 서버로 전송
+      }
+    );
+
+    if (response.status === 200) {
+      setPlantScore(newTotalScore); // 새로운 총점으로 상태 업데이트
+      setScoreInput('');
+      Swal.fire({
+        title: "성공",
+        text: `${additionalScore}점이 추가되어 총 ${newTotalScore}점이 되었습니다.`,
+        icon: "success",
+        confirmButtonText: "확인",
+        confirmButtonColor: "#63b26d",
+      });
+    }
+  } catch (error) {
+    console.error("점수 업데이트 중 오류 발생:", error);
+    Swal.fire({
+      title: "오류 발생",
+      text: "점수 업데이트에 실패했습니다.",
+      icon: "error",
+      confirmButtonText: "확인",
+      confirmButtonColor: "#ff6b6b",
+    });
+  }
+};
+
+  // 3D 모델 선택 함수
+  const selectPlantModel = (plantName, score) => {
+    const modelPrefix = plantName === "알로카시아 프라이덱" ? "Alokasia" : "Sansevieria";
+    let modelNumber;
+  
+    const scoreStages = {
+      "산세베리아 슈퍼바": [
+        { max: 200, model: 1 },
+        { max: 500, model: 2 },
+        { max: 1000, model: 3 },
+        { max: 1456, model: 4 },
+        { max: 2500, model: 5 },
+        { max: 4000, model: 6 },
+        { max: 5616, model: 7 },
+        { max: 7000, model: 8 },
+        { max: 8500, model: 9 },
+        { max: Infinity, model: 10 },
+      ],
+      "알로카시아 프라이덱": [
+        { max: 200, model: 1 },
+        { max: 600, model: 2 },
+        { max: 1100, model: 3 },
+        { max: 1451, model: 4 },
+        { max: 3000, model: 5 },
+        { max: 5000, model: 6 },
+        { max: 6872, model: 7 },
+        { max: 8000, model: 8 },
+        { max: 9000, model: 9 },
+        { max: Infinity, model: 10 },
+      ],
+    };
+  
+    // 단계별 점수 기준에 따라 modelNumber 설정
+    const stages = scoreStages[plantName];
+    for (const stage of stages) {
+      if (score <= stage.max) {
+        modelNumber = stage.model;
+        break;
+      }
+    }
+    setCurrentModelNumber(modelNumber);
+    return `/models/${modelPrefix}/${modelPrefix}${modelNumber}.glb`;
+  };
+  
+// 3D 모델 컴포넌트
+const PlantModel = ({ plantName, score }) => {
+  const modelPath = selectPlantModel(plantName, score);
+  const { scene } = useGLTF(modelPath);
+  return <primitive object={scene} scale={10} position={[0, 0, 0]} />;
+};
+
+  const calculateAlokasiaStatus = () => {
     let suitableConditions = 0;
-
-    // 온도 조건 평가
-    if (temperature < 8 || temperature > 39) return "매우 나쁨"; // ±10 범위를 벗어난 경우
+  
+    if (temperature < 8 || temperature > 39) return "매우 나쁨";
+    if (waterLevel === 0) return "매우 나쁨";
     if (temperature >= 18 && temperature <= 29) suitableConditions += 1;
-
-    // 다른 조건 평가
     if (humidity >= 70) suitableConditions += 1;
-    if (["매우 약함", "약함", "보통"].includes(sunlightLevels[light - 1])) suitableConditions += 1;
+    if (["매우약함", "약함", "보통"].includes(sunlightLevels[light - 1])) suitableConditions += 1;
     if (waterLevel > 0) suitableConditions += 1;
-
-    // 상태 값 계산
+  
     if (suitableConditions === 4) return "매우 좋음";
     if (suitableConditions === 3) return "좋음";
     if (suitableConditions === 2) return "보통";
     if (suitableConditions === 1) return "나쁨";
     return "매우 나쁨";
-};
-
+  };
+  
+  const calculateSanseveriaStatus = () => {
+    let suitableConditions = 0;
+  
+    if (temperature < 8 || temperature > 40) return "매우 나쁨";
+    if (waterLevel === 0) return "매우 나쁨";
+    if (temperature >= 18 && temperature <= 30) suitableConditions += 1;
+    if (humidity >= 40 && humidity <= 70) suitableConditions += 1;
+    if (["매우약함", "약함", "보통"].includes(sunlightLevels[light - 1])) suitableConditions += 1;
+    if (waterLevel > 0) suitableConditions += 1;
+  
+    if (suitableConditions === 4) return "매우 좋음";
+    if (suitableConditions === 3) return "좋음";
+    if (suitableConditions === 2) return "보통";
+    if (suitableConditions === 1) return "나쁨";
+    return "매우 나쁨";
+  };
+  
+  // 상태 계산 함수 통합
+  const calculateStatus = () => {
+    if (plantName === "알로카시아 프라이덱") {
+      return calculateAlokasiaStatus();
+    } else if (plantName === "산세베리아 슈퍼바") {
+      return calculateSanseveriaStatus();
+    }
+    return "알 수 없음";
+  };
+  
   useEffect(() => {
     // 10초마다 식물 데이터 새로고침
     const fetchPlantData = async () => {
@@ -225,6 +399,7 @@ const GrowingContent = () => {
             // nowtem과 waterLevel 업데이트
             setNowtem(response.data.nowtem ?? nowtem);
             setWaterLevel(response.data.water ?? waterLevel);
+            setPlantScore(response.data.score ?? plantScore);
           }
         }
       } catch (error) {
@@ -240,7 +415,6 @@ const GrowingContent = () => {
     return () => clearInterval(intervalId);
   }, [userEmail]);
   
-  // 초기 사용자 이메일 가져오기
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -270,7 +444,6 @@ const GrowingContent = () => {
         return;
       }
   
-      // 상태 값 계산
       const state = calculateStatus();
   
       const response = await axios.post(
@@ -278,7 +451,7 @@ const GrowingContent = () => {
         {
           username: userEmail,
           ...updatedData,
-          state, // DTO 형식으로 상태 값 추가
+          state,
         }
       );
   
@@ -328,7 +501,7 @@ const GrowingContent = () => {
   };
 
   const handleTemperatureChangeEnd = () => {
-    const status = calculateStatus(); // 상태 계산
+    const status = calculateStatus();
     updatePlantData({ temperature: temperature, status });
   };
   
@@ -340,19 +513,19 @@ const GrowingContent = () => {
   };
 
   const handleHumidityChangeEnd = () => {
-    const status = calculateStatus(); // 상태 계산
+    const status = calculateStatus();
     updatePlantData({ humidity: humidity, status });
   };
   
   const handleLightChange = (e) => {
-    const newLight = Number(e.target.value); // 문자열을 숫자로 변환
-    setLight(newLight); // 상태 업데이트
+    const newLight = Number(e.target.value);
+    setLight(newLight);
   };
   
   const handleLightChangeEnd = () => {
     const lightLabels = ["매우 약함", "약함", "보통", "강함", "매우 강함"];
-    const lightValue = lightLabels[light - 1]; // 숫자를 텍스트로 변환
-    const status = calculateStatus(); // 상태 계산
+    const lightValue = lightLabels[light - 1];
+    const status = calculateStatus();
     updatePlantData({ light: lightValue, status });
   };
   
@@ -388,7 +561,6 @@ const GrowingContent = () => {
     });
   };
   
-
   // 모달 및 슬라이더 토글 핸들러
   const handleArrowClick = () => {
     setIsModalOpen(!isModalOpen);
@@ -414,29 +586,51 @@ const GrowingContent = () => {
 
           <MainContainer>
             <MainFrame>
+              
               <Canvas
                 camera={{
                   position: [0, 5, 10],
                   fov: 40,
                 }}
               >
-                <ambientLight intensity={1.0} />
+                <ambientLight intensity={2.0} />
                 <directionalLight position={[2, 5, 2]} intensity={1.2} />
                 <OrbitControls
                   enableZoom={false}
-                  minDistance={7} // 줌 최소 거리
-                  maxDistance={15} // 줌 최대 거리
+                  minDistance={1}
+                  maxDistance={65}
                   maxPolarAngle={Math.PI / 2}
                   rotateSpeed={0.7}
                   target={[0, 0, 0]}
                 />
-                {plantName === "알로카시아 프라이덱" && <AlokasiaModel />}
-                {plantName === "산세베리아 슈퍼바" && <SanseveriaModel />}
+                {plantName && (
+                  <PlantModel 
+                    plantName={plantName} 
+                    score={plantScore} 
+                  />
+                )}                
               </Canvas>
             </MainFrame>
           </MainContainer>
 
           <RightFrame>
+          <ScoreFrame>
+    <ScoreContainer>
+      <ScoreText>현재 스코어: {plantScore}</ScoreText>
+      <ScoreInputContainer>
+        <ScoreInput
+          type="number"
+          value={scoreInput}
+          onChange={handleScoreInputChange}
+          placeholder="추가할 점수"
+        />
+        <ScoreButton onClick={handleScoreSubmit}>
+          점수 추가
+        </ScoreButton>
+      </ScoreInputContainer>
+      <ModelText>로드된 모델 번호: {currentModelNumber}번 모델</ModelText>
+    </ScoreContainer>
+  </ScoreFrame>
             <InfoFrame>
               <InfoBox
                 nowtem={nowtem}
@@ -483,6 +677,7 @@ const GrowingContent = () => {
                 <WaterButton onClick={handleWatering}>
                   <GiWateringCan style={{ fontSize: "22px" }} /> 물 주기
                 </WaterButton>
+                
                 <WaterBarContainer>
                   <WaterBar level={waterLevel} />
                 </WaterBarContainer>
@@ -491,6 +686,7 @@ const GrowingContent = () => {
             </RightBottom>
           </RightFrame>
         </PlantContainer>
+        
 
         <Modal onClose={closeModal} isOpen={isModalOpen} />
       </Frame>
